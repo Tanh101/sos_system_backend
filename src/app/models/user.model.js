@@ -36,6 +36,14 @@ module.exports = (sequelize, type) => {
                     len: [10, 12]
                 }
             },
+            dob: {
+                type: DataTypes.DATE,
+                allowNull: true
+            },
+            address: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
             role: {
                 type: DataTypes.STRING,
                 allowNull: false,

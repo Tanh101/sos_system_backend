@@ -3,9 +3,11 @@ const morgan = require('morgan')
 require('dotenv').config();
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser')
+const cors = require("cors");
 
 const app = express()
 
+app.use(cors());
 app.use(morgan('short'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

@@ -24,6 +24,6 @@ const User = userModel(sequelize, Sequelize);
 /**
  * Uncomment this in order to generate table
  */
-// sequelize.sync().then(console.log('DB is synced'));
+sequelize.sync().then(console.log('DB is synced'));
 
 module.exports = { User };

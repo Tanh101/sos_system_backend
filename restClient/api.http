@@ -1,0 +1,21 @@
+
+POST http://localhost:8000/api/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "email": "lyvantanh2@gmail.com",
+    "password": "100102",
+    "name": "lyvantanh",
+    "phoneNumber": "0123456789",
+    "address": "Hanoi viet nam"
+}
+
+###
+
+POST http://localhost:8000/api/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "lyvantanh101@gmail.com",
+    "password": "100102"
+}
