@@ -10,10 +10,14 @@ const verify = promisify(jwt.verify).bind(jwt);
 
 exports.register = async (req, res) => {
     try {
-        const { email, password, name, phoneNumber } = req.body;
+        const { email, password, repeatPassword, name, dob, phoneNumber, address } = req.body;
         const user = await User.findOne({ where: { email: email } });
         if (user) {
             return res.status(400).json({ message: "Email already exists" });
+        }
+
+        if (password !== repeatPassword) {
+            return res.status(400).json({ message: "Password and repeat password are not the same" });
         }
 
         const hashedPassword = await bycript.hashSync(password, 10);
@@ -21,10 +25,15 @@ exports.register = async (req, res) => {
             email: email,
             password: hashedPassword,
             name: name,
+            dob: dob,
             phoneNumber: phoneNumber,
+            address: address
         });
 
-        return res.status(201).json(newUser);
+        const userWithoutPassword = newUser.toJSON();
+        delete userWithoutPassword.password;
+
+        return res.status(201).json(userWithoutPassword);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -173,12 +182,12 @@ exports.decodeToken = async (token, secretKey) => {
 };
 
 exports.verifyToken = async (token, secretKey) => {
-	try {
-		return await verify(token, secretKey);
-	} catch (error) {
-		console.log(`Error in verify access token:  + ${error}`);
-		return null;
-	}
+    try {
+        return await verify(token, secretKey);
+    } catch (error) {
+        console.log(`Error in verify access token:  + ${error}`);
+        return null;
+    }
 };
 
 exports.logout = async (req, res) => {
