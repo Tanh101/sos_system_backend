@@ -4,8 +4,16 @@ require('dotenv').config();
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser')
 const cors = require("cors");
+const http = require('http');
 
 const app = express()
+const server = http.createServer(app);
+
+const socketIo = require("socket.io")(server, {
+    cors: {
+        origin: "*",
+    }
+});
 
 app.use(cors());
 app.use(morgan('short'))
@@ -31,6 +39,20 @@ app.use('/api/user', userRoute)
 // upload route
 app.use('/api/upload', uploadroute)
 
-app.listen(port, () => {
+socketIo.on("connection", (dataSocket) => {
+    console.log("New client connected" + dataSocket.id);
+
+    dataSocket.on("sos", function (data) {
+        console.log("Client send SOS: " + data.message);
+        const serverMessage = "I'm here, don't worry" + dataSocket.id + data.message;
+        socketIo.to(dataSocket.id).emit("serverResponse", { serverMessage });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+    })
+
+    dataSocket.on("disconnect", () => {
+        console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+    });
+});
+
+server.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
