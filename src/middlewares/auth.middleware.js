@@ -1,6 +1,6 @@
 const jwtConfig = require("../app/configs/jwt.config");
 const { verifyToken } = require("../app/controllers/auth.controller");
-const { User } = require("../services/db");
+const db = require("../app/models/index");
 
 const authMiddleware = {
     getAccessToken: (req, res, next) => {
@@ -28,7 +28,7 @@ const authMiddleware = {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const user = await User.scope('withPassword').findByPk(verified.payload.id);
+        const user = await db.User.scope('withPassword').findByPk(verified.payload.id);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

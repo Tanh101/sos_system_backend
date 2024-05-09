@@ -1,9 +1,10 @@
-const { User } = require("../../services/db");
+const db = require('../models/index')
 const bycript = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const randToken = require('rand-token');
 const jwtConfig = require("../configs/jwt.config");
 const promisify = require("util").promisify;
+const User = db.users;
 
 const sign = promisify(jwt.sign).bind(jwt);
 const verify = promisify(jwt.verify).bind(jwt);

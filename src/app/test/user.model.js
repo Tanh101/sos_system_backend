@@ -1,7 +1,11 @@
-const { DataTypes } = require('sequelize');
+const { Sequelize, DataTypes, Model } = require('sequelize');
+
+class User extends Model {
+
+}
 
 module.exports = (sequelize, type) => {
-    return sequelize.define('user',
+    return sequelize.define('User',
         {
             id: {
                 type: DataTypes.BIGINT(20),
@@ -43,6 +47,15 @@ module.exports = (sequelize, type) => {
             address: {
                 type: DataTypes.STRING,
                 allowNull: true
+            },
+            avatar: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            status: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 1
             },
             role: {
                 type: DataTypes.STRING,
