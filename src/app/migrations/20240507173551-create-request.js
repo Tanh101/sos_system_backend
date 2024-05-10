@@ -30,6 +30,12 @@ module.exports = {
                     len: [10, 500]
                 }
             },
+            isEmergency:
+            {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: 0,
+            },
             status: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
@@ -69,11 +75,37 @@ module.exports = {
                 table: 'users',
                 field: 'id'
             },
-            onDelete: 'CASCADE'
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
+
+        await queryInterface.addConstraint('requests', {
+            type: 'FOREIGN KEY',
+            name: 'FK_requests_rescuerId',
+            fields: ['rescuerId'],
+            references: {
+                table: 'users',
+                field: 'id'
+            },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        });
+
+        await queryInterface.addConstraint('requests', {
+            type: 'FOREIGN KEY',
+            name: 'FK_requests_requestTypeId',
+            fields: ['requestTypeId'],
+            references: {
+                table: 'requestTypes',
+                field: 'id'
+            },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('requests');
         await queryInterface.removeConstraint('requests', 'FK_requests_userId')
+        await queryInterface.removeConstraint('requests', 'FK_requests_requestTypeId')
+        await queryInterface.dropTable('requests');
     }
 };

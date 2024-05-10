@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-           
+
         }
     }
     Request.init({
@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 len: [10, 500]
             }
+        },
+        isEmergency:
+        {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
         },
         status: {
             type: DataTypes.INTEGER,
