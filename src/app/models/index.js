@@ -51,6 +51,8 @@ db.Sequelize = Sequelize;
 
 db.users = require('./user')(sequelize, Sequelize);
 db.requests = require('./request')(sequelize, Sequelize);
+db.requestTypes = require('./requestType')(sequelize, Sequelize);
+db.requestMedia = require('./requestMedia')(sequelize, Sequelize);
 
 db.users.hasMany(db.requests, {
     as: 'requests'
@@ -60,6 +62,32 @@ db.requests.belongsTo(db.users, {
     foreignKey: 'userId',
     targetKey: 'id',
     as: 'users'
+});
+
+db.requests.belongsTo(db.users, {
+    foreignKey: 'rescuerId',
+    targetKey: 'id',
+    as: 'rescuers'
+});
+
+db.requests.hasMany(db.requestMedia, {
+    as: 'requestMedia'
+});
+
+db.requestTypes.hasMany(db.requests, {
+    as: 'requests'
+});
+
+db.requests.belongsTo(db.requestTypes, {
+    foreignKey: 'requestTypeId',
+    targetKey: 'id',
+    as: 'requestTypes'
+});
+
+db.requestMedia.belongsTo(db.requests, {
+    foreignKey: 'requestId',
+    targetKey: 'id',
+    as: 'requests'
 });
 
 module.exports = db;

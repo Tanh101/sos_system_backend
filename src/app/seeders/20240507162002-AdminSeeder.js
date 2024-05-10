@@ -16,19 +16,18 @@ module.exports = {
         */
         const adminPassword = await bcrypt.hash('lyvantanh2002', 10);
 
-        await queryInterface.bulkInsert('Users', [{
+        await queryInterface.bulkInsert('users', [{
             email: "admin@gmail.com",
             password: adminPassword,
             name: "Admin",
             dob: new Date(),
             phoneNumber: "0123456789",
-            address: "Hanoi",
+            address: "Hanoi Vietnam",
             status: 1,
             role: "admin",
             createdAt: new Date(),
             updatedAt: new Date()
         }], {});
-
     },
 
     async down(queryInterface, Sequelize) {
@@ -38,6 +37,6 @@ module.exports = {
          * Example:
          * await queryInterface.bulkDelete('People', null, {});
          */
-        await queryInterface.bulkDelete('Users', null, {});
+        await queryInterface.bulkDelete('users', null, {});
     }
 };

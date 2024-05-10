@@ -24,6 +24,8 @@ const authRoute = require('./routes/auth.route')
 const userRoute = require('./routes/user.route');
 const systemConfig = require('./app/configs/system.config');
 const uploadroute = require('./routes/upload.route');
+const requestRoute = require('./routes/request.route');
+const requestTypeRoute = require('./routes/requestType.route');
 const port = systemConfig.port || 3000
 
 app.get("/", (req, res) => {
@@ -38,6 +40,12 @@ app.use('/api/user', userRoute)
 
 // upload route
 app.use('/api/upload', uploadroute)
+
+//request route
+app.use('/api/requests', requestRoute)
+
+//requestType route
+app.use('/api/type', requestTypeRoute)
 
 socketIo.on("connection", (dataSocket) => {
     console.log("New client connected" + dataSocket.id);
