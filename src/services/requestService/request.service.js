@@ -15,9 +15,24 @@ exports.isExistRequestType = async (id) => {
     return true;
 }
 
+const createEmergencyRequest = async (userId, requests) => {
+    const newRequest = await Request.create({
+        userId: userId,
+        requestTypeId: requests.requestTypeId,
+        isEmergency: requests.isEmergency,
+        content: requests.content,
+        latitude: requests.latitude,
+        longitude: requests.longitude,
+        address: requests.address,
+    });
+
+    return newRequest;
+}
+
+
 exports.create = async (userId, requests) => {
     try {
-        const newRequest = await Request.create({
+        const newRequest = Request.create({
             userId: userId,
             requestTypeId: requests.requestTypeId,
             isEmergency: requests.isEmergency,
@@ -49,7 +64,8 @@ exports.get = async (page, itemPerPage, status, isEmergency) => {
             ],
             include: [
                 "users",
-                "requestTypes"
+                "requestTypes",
+                "requestMedia"
             ]
         });
 
