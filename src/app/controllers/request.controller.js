@@ -1,12 +1,14 @@
 const db = require("../models/index");
 const Request = db.requests;
 const requestService = require("../../services/requestService/request.service");
+const requestMediaService = require("../../services/requestMediaService/requestMedia.service");
+
 const { PAGE, REQUEST_STATUS, ITEM_PER_PAGE } = require("../../constants/constants");
 
 exports.create = async (req, res) => {
     try {
         const { id } = req.user;
-        const { requestTypeId } = req.body;
+        const { requestTypeId, media, isEmergency } = req.body;
 
         const isExistRequestType = await requestService.isExistRequestType(requestTypeId);
         if (!isExistRequestType) {
@@ -14,6 +16,10 @@ exports.create = async (req, res) => {
         }
 
         const request = await requestService.create(id, req.body);
+
+        if (!isEmergency && media && media.length > 0) {
+            await requestMediaService.create(request.id, media);
+        }
 
         return res.status(200).json(request);
     } catch (error) {

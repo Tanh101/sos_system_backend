@@ -10,6 +10,7 @@ const requestSchema = Joi.object({
     latitude: Joi.number().required(),
     longitude: Joi.number().required(),
     address: Joi.string().min(6).required(),
+    media: Joi.array().items(Joi.string()),
 });
 
 exports.validateCreateRequest = validator(requestSchema);
