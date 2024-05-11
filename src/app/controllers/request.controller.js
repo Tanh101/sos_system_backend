@@ -5,7 +5,7 @@ const requestMediaService = require("../../services/requestMediaService/requestM
 
 const { PAGE, REQUEST_STATUS, ITEM_PER_PAGE } = require("../../constants/constants");
 
-exports.create = async (req, res) => {
+exports.create = async(req, res) => {
     try {
         const { id } = req.user;
         const { requestTypeId, media, isEmergency } = req.body;
@@ -28,18 +28,19 @@ exports.create = async (req, res) => {
     }
 }
 
-exports.get = async (req, res) => {
+exports.get = async(req, res) => {
     try {
         const page = req.query.page || PAGE;
         const itemPerPage = req.query.itemPerPage || ITEM_PER_PAGE;
         const status = req.query.status | REQUEST_STATUS[0];
-        const isEmergency = req.query.isEmergency || 1;
+        const isEmergency = req.query.isEmergency;
 
         const requests = await requestService.get(page, itemPerPage, status, isEmergency);
 
         const totalPage = Math.ceil(requests.count / itemPerPage);
 
         const paginations = {
+            totalResult: requests.rows.length,
             totalPage,
             currentPage: page,
             itemPerPage
