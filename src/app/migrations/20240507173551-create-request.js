@@ -8,17 +8,17 @@ module.exports = {
                 primaryKey: true,
                 autoIncrement: true,
             },
-            userId: {
+            user_id: {
                 type: Sequelize.BIGINT(20),
                 allowNull: false,
                 foreignKey: true
             },
-            rescuerId: {
+            rescuer_id: {
                 type: Sequelize.BIGINT(20),
                 allowNull: true,
                 foreignKey: true
             },
-            requestTypeId: {
+            request_type_id: {
                 type: Sequelize.BIGINT(20),
                 allowNull: false,
                 foreignKey: true
@@ -30,7 +30,7 @@ module.exports = {
                     len: [10, 500]
                 }
             },
-            isEmergency:
+            is_emergency:
             {
                 type: Sequelize.INTEGER,
                 allowNull: false,
@@ -53,24 +53,24 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            voteCount: {
+            vote_count: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 defaultValue: 0,
             },
-            createdAt: {
+            created_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updatedAt: {
+            updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
         await queryInterface.addConstraint('requests', {
             type: 'FOREIGN KEY',
-            name: 'FK_requests_userId',
-            fields: ['userId'],
+            name: 'FK_requests_user_id',
+            fields: ['user_id'],
             references: {
                 table: 'users',
                 field: 'id'
@@ -81,8 +81,8 @@ module.exports = {
 
         await queryInterface.addConstraint('requests', {
             type: 'FOREIGN KEY',
-            name: 'FK_requests_rescuerId',
-            fields: ['rescuerId'],
+            name: 'FK_requests_rescuer_id',
+            fields: ['rescuer_id'],
             references: {
                 table: 'users',
                 field: 'id'
@@ -93,10 +93,10 @@ module.exports = {
 
         await queryInterface.addConstraint('requests', {
             type: 'FOREIGN KEY',
-            name: 'FK_requests_requestTypeId',
-            fields: ['requestTypeId'],
+            name: 'FK_requests_request_type_id',
+            fields: ['request_type_id'],
             references: {
-                table: 'requestTypes',
+                table: 'request_types',
                 field: 'id'
             },
             onDelete: 'CASCADE',
@@ -105,7 +105,7 @@ module.exports = {
     },
     async down(queryInterface, Sequelize) {
         await queryInterface.removeConstraint('requests', 'FK_requests_userId')
-        await queryInterface.removeConstraint('requests', 'FK_requests_requestTypeId')
+        await queryInterface.removeConstraint('requests', 'FK_requests_request_type_id')
         await queryInterface.dropTable('requests');
     }
 };

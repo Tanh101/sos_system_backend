@@ -27,7 +27,7 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-            phoneNumber: {
+            phone_number: {
                 type: Sequelize.STRING,
                 allowNull: false,
                 validate: {
@@ -57,19 +57,19 @@ module.exports = {
                 allowNull: false,
                 defaultValue: 'user'
             },
-            refreshToken: {
+            refresh_token: {
                 type: Sequelize.STRING,
                 allowNull: true
             },
-            createdAt: {
+            created_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updatedAt: {
+            updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            deletedAt: {
+            deleted_at: {
                 allowNull: true,
                 type: Sequelize.DATE
             }

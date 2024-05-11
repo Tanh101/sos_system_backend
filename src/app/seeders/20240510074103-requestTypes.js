@@ -24,38 +24,38 @@ module.exports = {
             'Động đất',
         ]
 
-        await queryInterface.bulkInsert('requestTypes', [{
+        await queryInterface.bulkInsert('request_types', [{
             name: requestTypeName[0],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[1],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[2],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[3],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[4],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[5],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[6],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }, {
             name: requestTypeName[7],
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }], {});
     },
 
@@ -66,6 +66,6 @@ module.exports = {
          * Example:
          * await queryInterface.bulkDelete('People', null, {});
          */
-        await queryInterface.bulkDelete('requestTypes', null, {});
+        await queryInterface.bulkDelete('request_types', null, {});
     }
 };

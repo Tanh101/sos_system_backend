@@ -71,6 +71,8 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
+        underscored: true,
+        underscoredAll: true,
         modelName: 'requests',
     });
 

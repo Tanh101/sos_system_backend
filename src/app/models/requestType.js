@@ -17,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
         name: DataTypes.STRING
     }, {
         sequelize,
+        underscored: true,
+        underscoredAll: true,
         modelName: 'requestTypes',
     });
     return requestType;
