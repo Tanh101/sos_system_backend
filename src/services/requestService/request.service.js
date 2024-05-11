@@ -2,7 +2,7 @@ const db = require("../../app/models/index");
 const Request = db.requests;
 const RequestType = db.requestTypes;
 
-exports.isExistRequestType = async (id) => {
+exports.isExistRequestType = async(id) => {
     const requestType = await RequestType.findOne({
         where: {
             id: id
@@ -15,22 +15,8 @@ exports.isExistRequestType = async (id) => {
     return true;
 }
 
-const createEmergencyRequest = async (userId, requests) => {
-    const newRequest = await Request.create({
-        userId: userId,
-        requestTypeId: requests.requestTypeId,
-        isEmergency: requests.isEmergency,
-        content: requests.content,
-        latitude: requests.latitude,
-        longitude: requests.longitude,
-        address: requests.address,
-    });
 
-    return newRequest;
-}
-
-
-exports.create = async (userId, requests) => {
+exports.create = async(userId, requests) => {
     try {
         const newRequest = Request.create({
             userId: userId,
@@ -50,17 +36,19 @@ exports.create = async (userId, requests) => {
 }
 
 
-exports.get = async (page, itemPerPage, status, isEmergency) => {
+exports.get = async(page, itemPerPage, status, isEmergency) => {
     try {
+        let query = {}
+
+        isEmergency ? query = { status: status, isEmergency: isEmergency } : query = { status: status }
+
         const requests = await Request.findAndCountAll({
-            where: {
-                status: status,
-                isEmergency: isEmergency
-            },
+            where: query,
             limit: itemPerPage,
             offset: (page - 1) * itemPerPage,
             order: [
-                ['createdAt', 'DESC'],
+                ["isEmergency", "DESC"],
+                ["createdAt", "DESC"],
             ],
             include: [
                 "users",
