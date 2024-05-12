@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
         url: DataTypes.STRING
     }, {
         sequelize,
+        underscored: true,
+        underscoredAll: true,
         modelName: 'requestMedia',
     });
     return requestMedia;

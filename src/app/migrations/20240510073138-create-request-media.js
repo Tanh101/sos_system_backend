@@ -2,13 +2,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('requestMedia', {
+        await queryInterface.createTable('request_media', {
             id: {
                 type: Sequelize.BIGINT(20),
                 primaryKey: true,
                 autoIncrement: true,
             },
-            requestId: {
+            request_id: {
                 type: Sequelize.BIGINT(20),
                 allowNull: false,
                 foreignKey: true
@@ -16,20 +16,20 @@ module.exports = {
             url: {
                 type: Sequelize.STRING
             },
-            createdAt: {
+            created_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             },
-            updatedAt: {
+            updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
             }
         });
 
-        await queryInterface.addConstraint('requestMedia', {
-            fields: ['requestId'],
+        await queryInterface.addConstraint('request_media', {
+            fields: ['request_id'],
             type: 'foreign key',
-            name: 'FK_requestId',
+            name: 'FK_request_id',
             references: {
                 table: 'requests',
                 field: 'id'
@@ -39,6 +39,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('requestMedia');
+        await queryInterface.dropTable('request_media');
     }
 };

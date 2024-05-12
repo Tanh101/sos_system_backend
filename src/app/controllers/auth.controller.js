@@ -48,12 +48,12 @@ exports.login = async (req, res) => {
         // check if email exists
         const user = await User.scope('withPassword').findOne({ where: { email: email } });
         if (!user) {
-            return res.status(400).json({ message: "Email not found" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const isPasswordValid = await bycript.compareSync(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: "Password is incorrect" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const accessTokenLife = jwtConfig.accessTokenLife;

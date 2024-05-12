@@ -77,7 +77,8 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'users',
         paranoid: true,
-        underscored: false,
+        underscored: true,
+        underscoredAll: true,
         defaultScope: {
             attributes: { exclude: ['password', 'refreshToken'] }
         },

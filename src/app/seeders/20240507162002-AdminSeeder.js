@@ -21,12 +21,12 @@ module.exports = {
             password: adminPassword,
             name: "Admin",
             dob: new Date(),
-            phoneNumber: "0123456789",
+            phone_number: "0123456789",
             address: "Hanoi Vietnam",
             status: 1,
             role: "admin",
-            createdAt: new Date(),
-            updatedAt: new Date()
+            created_at: new Date(),
+            updated_at: new Date()
         }], {});
     },
 
