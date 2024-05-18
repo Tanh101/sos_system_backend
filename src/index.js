@@ -1,66 +1,78 @@
-const express = require('express')
-const morgan = require('morgan')
-require('dotenv').config();
-const fileUpload = require('express-fileupload');
-const bodyParser = require('body-parser')
+const express = require("express");
+const morgan = require("morgan");
+require("dotenv").config();
+const fileUpload = require("express-fileupload");
+const bodyParser = require("body-parser");
 const cors = require("cors");
-const http = require('http');
+const http = require("http");
 
-const app = express()
+const app = express();
 const server = http.createServer(app);
 
 const socketIo = require("socket.io")(server, {
     cors: {
         origin: "*",
-    }
+    },
 });
 
 app.use(cors());
-app.use(morgan('short'))
+app.use(morgan("short"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const authRoute = require('./routes/auth.route')
-const userRoute = require('./routes/user.route');
-const systemConfig = require('./app/configs/system.config');
-const uploadroute = require('./routes/upload.route');
-const requestRoute = require('./routes/request.route');
-const requestTypeRoute = require('./routes/requestType.route');
-const port = systemConfig.port || 3000
+const authRoute = require("./routes/auth.route");
+const userRoute = require("./routes/user.route");
+const systemConfig = require("./app/configs/system.config");
+const uploadroute = require("./routes/upload.route");
+const requestRoute = require("./routes/request.route");
+const requestTypeRoute = require("./routes/requestType.route");
+const port = systemConfig.port || 3000;
+
+const clientController = require("./app/controllers/socket/client.controller");
+const rescuerController = require("./app/controllers/socket/rescuer.controller");
 
 app.get("/", (req, res) => {
     res.json({ message: "ok" });
 });
 
 // auth route
-app.use('/api/auth', authRoute)
+app.use("/api/auth", authRoute);
 
 // user route
-app.use('/api/user', userRoute)
+app.use("/api/user", userRoute);
 
 // upload route
-app.use('/api/upload', uploadroute)
+app.use("/api/upload", uploadroute);
 
 //request route
-app.use('/api/requests', requestRoute)
+app.use("/api/requests", requestRoute);
 
 //requestType route
-app.use('/api/type', requestTypeRoute)
+app.use("/api/type", requestTypeRoute);
 
-socketIo.on("connection", (dataSocket) => {
-    console.log("New client connected" + dataSocket.id);
+let rescuers = [];
+socketIo.on("connection", (socket) => {
+    // Xử lý khi client gửi yêu cầu
+    socket.on("clientRequest", (data) => {
+        clientController.handleClientRequest(socketIo, socket, data, rescuers);
+    });
 
-    dataSocket.on("sos", function (data) {
-        console.log("Client send SOS: " + data.message);
-        const serverMessage = "I'm here, don't worry" + dataSocket.id + data.message;
-        socketIo.to(dataSocket.id).emit("serverResponse", { serverMessage });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-    })
+    // Xử lý khi rescuer kết nối
+    socket.on("rescuerJoin", () => {
+        rescuerController.handleRescuerJoin(socket, rescuers);
+    });
 
-    dataSocket.on("disconnect", () => {
-        console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+    // Xử lý khi rescuer phản hồi
+    socket.on("rescuerResponse", (data) => {
+        rescuerController.handleRescuerResponse(socketIo, socket, data, clientController);
+    });
+
+    // Xử lý khi ngắt kết nối
+    socket.on("disconnect", () => {
+        rescuers = rescuerController.handleDisconnect(socket, rescuers);
     });
 });
 
 server.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-})
+    console.log(`Example app listening at http://localhost:${port}`);
+});

@@ -2,7 +2,7 @@ const db = require("../../app/models/index");
 const Request = db.requests;
 const RequestType = db.requestTypes;
 
-exports.isExistRequestType = async(id) => {
+exports.isExistRequestType = async (id) => {
     const requestType = await RequestType.findOne({
         where: {
             id: id
@@ -16,7 +16,7 @@ exports.isExistRequestType = async(id) => {
 }
 
 
-exports.create = async(userId, requests) => {
+exports.create = async (userId, requests) => {
     try {
         const newRequest = Request.create({
             userId: userId,
@@ -36,7 +36,7 @@ exports.create = async(userId, requests) => {
 }
 
 
-exports.get = async(page, itemPerPage, status, isEmergency) => {
+exports.get = async (page, itemPerPage, status, isEmergency) => {
     try {
         let query = {}
 
@@ -58,6 +58,77 @@ exports.get = async(page, itemPerPage, status, isEmergency) => {
         });
 
         return requests;
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getDetail = async (id, userId) => {
+    try {
+        const request = await Request.findOne({
+            where: {
+                userId: userId,
+                id: id,
+            },
+            include: [
+                "users",
+                "requestTypes",
+                "requestMedia"
+            ]
+        });
+
+        if (!request) {
+            return false;
+        }
+
+        return request;
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.upvote = async (id, userId) => {
+    try {
+        const request = await Request.findOne({
+            where: {
+                userId: userId,
+                id: id,
+            },
+        });
+
+        if (!request) {
+            return false;
+        }
+
+        request.voteCount += 1;
+        request.save();
+
+        return request.voteCount;
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.downvote = async (id, userId) => {
+    try {
+        const request = await Request.findOne({
+            where: {
+                userId: userId,
+                id: id,
+            },
+        });
+
+        if (!request) {
+            return false;
+        }
+
+        request.voteCount -= 1;
+        request.save();
+
+        return request.voteCount;
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
