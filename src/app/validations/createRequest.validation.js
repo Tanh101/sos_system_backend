@@ -5,7 +5,7 @@ const validator = (schema) => (payload) =>
 
 const requestSchema = Joi.object({
     requestTypeId: Joi.number().required(),
-    content: Joi.string().min(6).required(),
+    content: Joi.string().min(10).required(),
     isEmergency: Joi.number().required(),
     latitude: Joi.number().required(),
     longitude: Joi.number().required(),

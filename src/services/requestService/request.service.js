@@ -1,3 +1,4 @@
+const Sequelize = require("sequelize");
 const db = require("../../app/models/index");
 const Request = db.requests;
 const RequestType = db.requestTypes;
@@ -44,8 +45,8 @@ exports.get = async (page, itemPerPage, status, isEmergency) => {
 
         const requests = await Request.findAndCountAll({
             where: query,
-            limit: itemPerPage,
-            offset: (page - 1) * itemPerPage,
+            limit: Sequelize.literal(itemPerPage),
+            offset: Sequelize.literal((page - 1) * itemPerPage),
             order: [
                 ["isEmergency", "DESC"],
                 ["createdAt", "DESC"],
