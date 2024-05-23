@@ -5,9 +5,7 @@ const randToken = require('rand-token');
 const jwtConfig = require("../configs/jwt.config");
 const promisify = require("util").promisify;
 const User = db.users;
-
-const sign = promisify(jwt.sign).bind(jwt);
-const verify = promisify(jwt.verify).bind(jwt);
+const AuthService = require('../../services/authService/auth.service');
 
 exports.register = async(req, res) => {
     try {
@@ -70,7 +68,7 @@ exports.login = async(req, res) => {
             role: user.role
         };
 
-        const accessToken = await this.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
+        const accessToken = await AuthService.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
         if (!accessToken) {
             return res.status(401).json({ message: "Login failed" });
         }
@@ -102,22 +100,6 @@ exports.login = async(req, res) => {
     }
 }
 
-exports.generateToken = async(payload, secretSignature, tokenLife) => {
-    try {
-        return await sign({
-                payload,
-            },
-            secretSignature, {
-                algorithm: 'HS256',
-                expiresIn: tokenLife,
-            },
-        );
-    } catch (error) {
-        console.log(`Error in generate access token:  + ${error}`);
-        return null;
-    }
-}
-
 exports.refreshToken = async(req, res) => {
     try {
         // get access token from header
@@ -136,7 +118,7 @@ exports.refreshToken = async(req, res) => {
         const accessTokenSecret = jwtConfig.accessTokenSecret;
         const accessTokenLife = jwtConfig.accessTokenLife;
 
-        const decodedAccessToken = await this.decodeToken(accessTokenFromHeader, accessTokenSecret);
+        const decodedAccessToken = await AuthService.decodeToken(accessTokenFromHeader, accessTokenSecret);
         if (!decodedAccessToken) {
             return res.status(401).json({ message: "Access token is invalid" });
         }
@@ -160,7 +142,7 @@ exports.refreshToken = async(req, res) => {
             role: user.role,
         };
 
-        const newAccessToken = await this.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
+        const newAccessToken = await AuthService.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
         if (!newAccessToken) {
             return res.status(401).json({ message: "Refresh token failed" });
         }
@@ -173,26 +155,6 @@ exports.refreshToken = async(req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
-
-exports.decodeToken = async(token, secretKey) => {
-    try {
-        return await verify(token, secretKey, {
-            ignoreExpiration: true,
-        });
-    } catch (error) {
-        console.log(`Error in decode access token: ${error}`);
-        return null;
-    }
-};
-
-exports.verifyToken = async(token, secretKey) => {
-    try {
-        return await verify(token, secretKey);
-    } catch (error) {
-        console.log(`Error in verify access token:  + ${error}`);
-        return null;
-    }
-};
 
 exports.logout = async(req, res) => {
     try {

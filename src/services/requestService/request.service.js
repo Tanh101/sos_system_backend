@@ -6,16 +6,15 @@ const RequestType = db.requestTypes;
 exports.isExistRequestType = async(id) => {
     const requestType = await RequestType.findOne({
         where: {
-            id: id
-        }
+            id: id,
+        },
     });
     if (!requestType) {
         return false;
     }
 
     return true;
-}
-
+};
 
 exports.create = async(userId, requests) => {
     try {
@@ -34,14 +33,15 @@ exports.create = async(userId, requests) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
-
+};
 
 exports.get = async(page, itemPerPage, status, isEmergency) => {
     try {
-        let query = {}
+        let query = {};
 
-        isEmergency ? query = { status: status, isEmergency: isEmergency } : query = { status: status }
+        isEmergency
+            ? (query = { status: status, isEmergency: isEmergency })
+            : (query = { status: status });
 
         const requests = await Request.findAndCountAll({
             where: query,
@@ -51,11 +51,7 @@ exports.get = async(page, itemPerPage, status, isEmergency) => {
                 ["isEmergency", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            include: [
-                "users",
-                "requestTypes",
-                "requestMedia"
-            ]
+            include: ["users", "requestTypes", "requestMedia"],
         });
 
         return requests;
@@ -63,7 +59,7 @@ exports.get = async(page, itemPerPage, status, isEmergency) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 exports.getDetail = async(id) => {
     try {
@@ -71,11 +67,7 @@ exports.getDetail = async(id) => {
             where: {
                 id: id,
             },
-            include: [
-                "users",
-                "requestTypes",
-                "requestMedia"
-            ]
+            include: ["users", "requestTypes", "requestMedia"],
         });
 
         if (!request) {
@@ -87,7 +79,27 @@ exports.getDetail = async(id) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+exports.getById = async (id) => {
+    try {
+        const request = await Request.findOne({
+            where: {
+                id: id,
+            },
+            include: ["users", "requestTypes", "requestMedia"],
+        });
+
+        if (!request) {
+            return false;
+        }
+
+        return request;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
 
 exports.upvote = async(id, userId) => {
     try {
@@ -110,7 +122,7 @@ exports.upvote = async(id, userId) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 exports.downvote = async(id, userId) => {
     try {
@@ -133,4 +145,4 @@ exports.downvote = async(id, userId) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};

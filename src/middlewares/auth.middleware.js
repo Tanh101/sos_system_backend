@@ -1,5 +1,5 @@
 const jwtConfig = require("../app/configs/jwt.config");
-const { verifyToken } = require("../app/controllers/auth.controller");
+const { verifyToken } = require("../services/authService/auth.service");
 const db = require("../app/models/index");
 const User = db.users;
 
