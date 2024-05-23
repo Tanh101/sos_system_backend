@@ -5,6 +5,7 @@ const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const http = require("http");
+const mongoDB = require("./app/configs/mongoose.config");
 
 const app = express();
 const server = http.createServer(app);
@@ -30,6 +31,10 @@ const port = systemConfig.port || 3000;
 
 const clientController = require("./app/controllers/socket/client.controller");
 const rescuerController = require("./app/controllers/socket/rescuer.controller");
+const locationController = require("./app/controllers/socket/location.controller");
+
+// connect to mongodb
+mongoDB.connect();
 
 app.get("/", (req, res) => {
     res.json({ message: "ok" });
@@ -52,6 +57,7 @@ app.use("/api/type", requestTypeRoute);
 
 let rescuers = [];
 socketIo.on("connection", (socket) => {
+    console.log(`User ${socket.id} connected`);
     // Xử lý khi client gửi yêu cầu
     socket.on("clientRequest", (data) => {
         clientController.handleClientRequest(socketIo, socket, data, rescuers);
@@ -64,8 +70,15 @@ socketIo.on("connection", (socket) => {
 
     // Xử lý khi rescuer phản hồi
     socket.on("rescuerResponse", (data) => {
-        rescuerController.handleRescuerResponse(socketIo, socket, data, clientController);
+        rescuerController.handleRescuerResponse(
+            socketIo,
+            socket,
+            data,
+            clientController
+        );
     });
+
+    locationController(socketIo, socket);
 
     // Xử lý khi ngắt kết nối
     socket.on("disconnect", () => {
