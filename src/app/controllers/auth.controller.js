@@ -9,7 +9,7 @@ const User = db.users;
 const sign = promisify(jwt.sign).bind(jwt);
 const verify = promisify(jwt.verify).bind(jwt);
 
-exports.register = async (req, res) => {
+exports.register = async(req, res) => {
     try {
         const { email, password, repeatPassword, name, dob, phoneNumber, address } = req.body;
         const user = await User.findOne({ where: { email: email } });
@@ -41,7 +41,7 @@ exports.register = async (req, res) => {
     }
 }
 
-exports.login = async (req, res) => {
+exports.login = async(req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -54,6 +54,11 @@ exports.login = async (req, res) => {
         const isPasswordValid = await bycript.compareSync(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        if (user.status === 0) {
+
+            return res.status(403).json({ message: "User is blocked" });
         }
 
         const accessTokenLife = jwtConfig.accessTokenLife;
@@ -97,14 +102,12 @@ exports.login = async (req, res) => {
     }
 }
 
-exports.generateToken = async (payload, secretSignature, tokenLife) => {
+exports.generateToken = async(payload, secretSignature, tokenLife) => {
     try {
-        return await sign(
-            {
+        return await sign({
                 payload,
             },
-            secretSignature,
-            {
+            secretSignature, {
                 algorithm: 'HS256',
                 expiresIn: tokenLife,
             },
@@ -115,7 +118,7 @@ exports.generateToken = async (payload, secretSignature, tokenLife) => {
     }
 }
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async(req, res) => {
     try {
         // get access token from header
         const accessTokenFromHeader = req.accessToken;
@@ -171,7 +174,7 @@ exports.refreshToken = async (req, res) => {
     }
 }
 
-exports.decodeToken = async (token, secretKey) => {
+exports.decodeToken = async(token, secretKey) => {
     try {
         return await verify(token, secretKey, {
             ignoreExpiration: true,
@@ -182,7 +185,7 @@ exports.decodeToken = async (token, secretKey) => {
     }
 };
 
-exports.verifyToken = async (token, secretKey) => {
+exports.verifyToken = async(token, secretKey) => {
     try {
         return await verify(token, secretKey);
     } catch (error) {
@@ -191,7 +194,7 @@ exports.verifyToken = async (token, secretKey) => {
     }
 };
 
-exports.logout = async (req, res) => {
+exports.logout = async(req, res) => {
     try {
         // get user from access token
         const { id } = req.user;

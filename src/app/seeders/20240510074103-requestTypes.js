@@ -11,52 +11,47 @@ module.exports = {
          *   name: 'John Doe',
          *   isBetaMember: false
          * }], {});
-        */
+         */
 
         const requestTypeName = [
-            'Cứu thương',
-            'Bão lụt',
-            'Hỏa hoạn',
-            'Tai nạn giao thông',
-            'Bắt cóc',
-            'Cứu vớt',
-            'Đuối nước',
-            'Động đất',
+            {
+                name: "Cứu thương",
+                icon_url: "https://img.icons8.com/ios/452/ambulance.png"
+            },
+            {
+                name: "Lũ Lụt",
+                icon_url: "https://sossystem.s3.amazonaws.com/flood+(1).png"
+            },
+            {
+                name: "Hỏa Hoạn",
+                icon_url: "https://img.icons8.com/ios/452/fire-element.png"
+            },
+            {
+                name: "Tai Nạn Giao Thông",
+                icon_url: "https://img.icons8.com/ios/452/car-crash.png"
+            },
+            {
+                name: "Dịch bệnh",
+                icon_url: "https://img.icons8.com/ios/452/medical-bag.png"
+            },
+            {
+                name: "Đuối nước",
+                icon_url: "https://img.icons8.com/ios/452/forest.png"
+            },
+            {
+                name: "Mưa bảo",
+                icon_url: "https://img.icons8.com/ios/452/rain.png"
+            }
         ]
+        requestTypeName.forEach(async (requestType) => {
+            await queryInterface.bulkInsert('request_types', [{
+                name: requestType.name,
+                icon_url: requestType.icon_url,
+                created_at: new Date(),
+                updated_at: new Date()
+            }], {});
+        });
 
-        await queryInterface.bulkInsert('request_types', [{
-            name: requestTypeName[0],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[1],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[2],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[3],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[4],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[5],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[6],
-            created_at: new Date(),
-            updated_at: new Date()
-        }, {
-            name: requestTypeName[7],
-            created_at: new Date(),
-            updated_at: new Date()
-        }], {});
     },
 
     async down(queryInterface, Sequelize) {
