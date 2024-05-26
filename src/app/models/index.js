@@ -11,8 +11,7 @@ const db = {};
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USERNAME,
-    process.env.DB_PASSWORD,
-    {
+    process.env.DB_PASSWORD, {
         host: process.env.DB_HOST,
         logging: false,
         dialect: 'mysql',
@@ -57,9 +56,14 @@ db.users = require('./user')(sequelize, Sequelize);
 db.requests = require('./request')(sequelize, Sequelize);
 db.requestTypes = require('./requestType')(sequelize, Sequelize);
 db.requestMedia = require('./requestMedia')(sequelize, Sequelize);
+db.votes = require('./votes')(sequelize, Sequelize);
 
 db.users.hasMany(db.requests, {
     as: 'requests'
+});
+
+db.users.hasMany(db.votes, {
+    as: 'votes'
 });
 
 db.requests.belongsTo(db.users, {
@@ -78,6 +82,10 @@ db.requests.hasMany(db.requestMedia, {
     as: 'requestMedia'
 });
 
+db.requests.hasMany(db.votes, {
+    as: 'votes'
+});
+
 db.requestTypes.hasMany(db.requests, {
     as: 'requests'
 });
@@ -89,6 +97,18 @@ db.requests.belongsTo(db.requestTypes, {
 });
 
 db.requestMedia.belongsTo(db.requests, {
+    foreignKey: 'requestId',
+    targetKey: 'id',
+    as: 'requests'
+});
+
+db.votes.belongsTo(db.users, {
+    foreignKey: 'userId',
+    targetKey: 'id',
+    as: 'users'
+});
+
+db.votes.belongsTo(db.requests, {
     foreignKey: 'requestId',
     targetKey: 'id',
     as: 'requests'

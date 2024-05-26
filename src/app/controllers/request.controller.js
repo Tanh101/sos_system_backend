@@ -10,7 +10,7 @@ const {
 } = require("../../constants/constants");
 const user = require("../models/user");
 
-exports.create = async (req, res) => {
+exports.create = async(req, res) => {
     try {
         const { id } = req.user;
         const { requestTypeId, media, isEmergency } = req.body;
@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
     }
 };
 
-exports.get = async (req, res) => {
+exports.get = async(req, res) => {
     try {
         const page = req.query.page || PAGE;
         const itemPerPage = req.query.itemPerPage || ITEM_PER_PAGE;
@@ -70,9 +70,10 @@ exports.get = async (req, res) => {
     }
 };
 
-exports.getDetail = async (id, userId) => {
+exports.getById = async(req, res) => {
     try {
-        const request = await requestService.getDetail(id, userId);
+        const { id } = req.params;
+        const request = await requestService.getDetail(id);
 
         if (!request) {
             return res.status(404).json({ message: "Request not found" });
@@ -85,7 +86,7 @@ exports.getDetail = async (id, userId) => {
     }
 }
 
-exports.isExistRequest = async (id) => {
+exports.isExistRequest = async(id) => {
     const request = await Request.findOne({
         where: {
             id: id
@@ -99,7 +100,7 @@ exports.isExistRequest = async (id) => {
     return true;
 }
 
-exports.upvotePost = async (req, res) => {
+exports.upvotePost = async(req, res) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;
@@ -113,7 +114,7 @@ exports.upvotePost = async (req, res) => {
     }
 };
 
-exports.downvotePost = async (req, res) => {
+exports.downvotePost = async(req, res) => {
     try {
         const userId = req.user.id;
         const { id } = req.params;

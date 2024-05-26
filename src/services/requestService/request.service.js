@@ -3,7 +3,7 @@ const db = require("../../app/models/index");
 const Request = db.requests;
 const RequestType = db.requestTypes;
 
-exports.isExistRequestType = async (id) => {
+exports.isExistRequestType = async(id) => {
     const requestType = await RequestType.findOne({
         where: {
             id: id
@@ -17,7 +17,7 @@ exports.isExistRequestType = async (id) => {
 }
 
 
-exports.create = async (userId, requests) => {
+exports.create = async(userId, requests) => {
     try {
         const newRequest = Request.create({
             userId: userId,
@@ -37,7 +37,7 @@ exports.create = async (userId, requests) => {
 }
 
 
-exports.get = async (page, itemPerPage, status, isEmergency) => {
+exports.get = async(page, itemPerPage, status, isEmergency) => {
     try {
         let query = {}
 
@@ -65,11 +65,10 @@ exports.get = async (page, itemPerPage, status, isEmergency) => {
     }
 }
 
-exports.getDetail = async (id, userId) => {
+exports.getDetail = async(id) => {
     try {
         const request = await Request.findOne({
             where: {
-                userId: userId,
                 id: id,
             },
             include: [
@@ -90,7 +89,7 @@ exports.getDetail = async (id, userId) => {
     }
 }
 
-exports.upvote = async (id, userId) => {
+exports.upvote = async(id, userId) => {
     try {
         const request = await Request.findOne({
             where: {
@@ -113,7 +112,7 @@ exports.upvote = async (id, userId) => {
     }
 }
 
-exports.downvote = async (id, userId) => {
+exports.downvote = async(id, userId) => {
     try {
         const request = await Request.findOne({
             where: {

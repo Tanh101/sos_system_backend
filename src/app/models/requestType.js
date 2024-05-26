@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     requestType.init({
-        name: DataTypes.STRING
+        name: DataTypes.STRING,
+        iconUrl: DataTypes.STRING
     }, {
         sequelize,
         underscored: true,
