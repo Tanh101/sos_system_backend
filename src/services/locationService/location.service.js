@@ -1,10 +1,11 @@
 const Location = require("../../app/models/mongo/location");
 
-exports.update = async (requestId, latitude, longitude) => {
+exports.update = async (requestId, userId, latitude, longitude) => {
     try {
         const location = await Location.findOneAndUpdate(
             { requestId },
             {
+                userId,
                 location: {
                     type: "Point",
                     coordinates: [longitude, latitude],

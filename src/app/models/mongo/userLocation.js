@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const locationSchema = new mongoose.Schema({
-    requestId: { type: Number, required: true },
+const userLocationSchema = new mongoose.Schema({
     userId: { type: Number, required: true },
+    role: String,
     location: {
         type: {
             type: String,
@@ -18,6 +18,6 @@ const locationSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-locationSchema.index({ location: '2dsphere' });
+userLocationSchema.index({ location: "2dsphere" });
 
-module.exports = mongoose.model('locations', locationSchema);
+module.exports = mongoose.model("user_location", userLocationSchema);

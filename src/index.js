@@ -32,6 +32,8 @@ const port = systemConfig.port || 3000;
 const clientController = require("./app/controllers/socket/client.controller");
 const rescuerController = require("./app/controllers/socket/rescuer.controller");
 const locationController = require("./app/controllers/socket/location.controller");
+const authMiddleware = require("./middlewares/socket/auth.middleware");
+const notificationController = require("./app/controllers/socket/notification.controller");
 
 // connect to mongodb
 mongoDB.connect();
@@ -56,34 +58,35 @@ app.use("/api/requests", requestRoute);
 app.use("/api/type", requestTypeRoute);
 
 let rescuers = [];
+socketIo.use((socket, next) => {
+    authMiddleware.checkAuthHeader(socket, next);
+});
+
 socketIo.on("connection", (socket) => {
-    console.log(`User ${socket.id} connected`);
-    // Xử lý khi client gửi yêu cầu
-    socket.on("clientRequest", (data) => {
-        clientController.handleClientRequest(socketIo, socket, data, rescuers);
-    });
+    console.log(`User ${socket.id} with userId ${socket.user.id} connected`);
+    const role = socket.user.role;
+    socket.join(role);
+    socket.join(socket.user.id);
 
-    // Xử lý khi rescuer kết nối
-    socket.on("rescuerJoin", () => {
-        rescuerController.handleRescuerJoin(socket, rescuers);
-    });
-
-    // Xử lý khi rescuer phản hồi
-    socket.on("rescuerResponse", (data) => {
-        rescuerController.handleRescuerResponse(
-            socketIo,
-            socket,
-            data,
-            clientController
-        );
+    // auth middleware
+    socket.use((package, next) => {
+        authMiddleware.checkAuth(socket, package, (error) => {
+            if (error) {
+                console.error("Authentication error:", error.message);
+                // Emit the error back to the client
+                if (error.message === "Unauthorized: Token expired") {
+                    socket.emit("tokenExpired", { message: error.message });
+                } else {
+                    socket.emit("error", { message: error.message });
+                }
+            } else {
+                next();
+            }
+        });
     });
 
     locationController(socketIo, socket);
-
-    // Xử lý khi ngắt kết nối
-    socket.on("disconnect", () => {
-        rescuers = rescuerController.handleDisconnect(socket, rescuers);
-    });
+    notificationController(socketIo, socket);
 });
 
 server.listen(port, () => {
