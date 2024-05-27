@@ -12,9 +12,16 @@ const REQUEST_STATUS = {
     "3": "rejected"
 };
 
+const VOTE_TYPE = {
+    "upvote": 1,
+    "downvote": 0,
+    "none": 2
+}
+    
 module.exports = {
     userStatusList,
     ITEM_PER_PAGE,
     PAGE,
-    REQUEST_STATUS
+    REQUEST_STATUS,
+    VOTE_TYPE
 };

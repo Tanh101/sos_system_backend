@@ -1,9 +1,12 @@
 const Sequelize = require("sequelize");
 const db = require("../../app/models/index");
+const Vote = db.votes;
 const Request = db.requests;
 const RequestType = db.requestTypes;
+const User = db.users;
+const RequestMedia = db.requestMedia;
 
-exports.isExistRequestType = async(id) => {
+exports.isExistRequestType = async (id) => {
     const requestType = await RequestType.findOne({
         where: {
             id: id,
@@ -16,7 +19,7 @@ exports.isExistRequestType = async(id) => {
     return true;
 };
 
-exports.create = async(userId, requests) => {
+exports.create = async (userId, requests) => {
     try {
         const newRequest = Request.create({
             userId: userId,
@@ -35,7 +38,7 @@ exports.create = async(userId, requests) => {
     }
 };
 
-exports.get = async(page, itemPerPage, status, isEmergency) => {
+exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
     try {
         let query = {};
 
@@ -45,39 +48,102 @@ exports.get = async(page, itemPerPage, status, isEmergency) => {
 
         const requests = await Request.findAndCountAll({
             where: query,
-            limit: Sequelize.literal(itemPerPage),
-            offset: Sequelize.literal((page - 1) * itemPerPage),
+            limit: itemPerPage,
+            offset: (page - 1) * itemPerPage,
             order: [
                 ["isEmergency", "DESC"],
                 ["createdAt", "DESC"],
             ],
-            include: ["users", "requestTypes", "requestMedia"],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'id',
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: userId
+                    },
+                    required: false
+                }
+            ],
         });
 
         return requests;
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
-exports.getDetail = async(id) => {
+exports.getDetail = async (id, userId) => {
     try {
         const request = await Request.findOne({
             where: {
                 id: id,
             },
-            include: ["users", "requestTypes", "requestMedia"],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: userId
+                    },
+                    required: false
+                }
+            ],
         });
 
         if (!request) {
             return false;
         }
-
         return request;
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        throw error;
     }
 };
 
@@ -101,48 +167,20 @@ exports.getById = async (id) => {
     }
 };
 
-exports.upvote = async(id, userId) => {
+exports.isExistRequest = async (id) => {
     try {
         const request = await Request.findOne({
             where: {
-                userId: userId,
-                id: id,
-            },
+                id: id
+            }
         });
 
         if (!request) {
             return false;
         }
 
-        request.voteCount += 1;
-        request.save();
-
-        return request.voteCount;
+        return true;
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-exports.downvote = async(id, userId) => {
-    try {
-        const request = await Request.findOne({
-            where: {
-                userId: userId,
-                id: id,
-            },
-        });
-
-        if (!request) {
-            return false;
-        }
-
-        request.voteCount -= 1;
-        request.save();
-
-        return request.voteCount;
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        console.log(error)
     }
 };

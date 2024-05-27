@@ -37,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         underscoredAll: true,
         modelName: 'votes',
+        deletedAt: 'destroyTime',
     });
     return votes;
 };
