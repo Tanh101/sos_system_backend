@@ -1,22 +1,25 @@
 const mongoose = require("mongoose");
 
-const userLocationSchema = new mongoose.Schema({
-    userId: { type: Number, required: true },
-    role: String,
-    location: {
-        type: {
-            type: String,
-            enum: ["Point"],
-            required: true,
-        },
-        coordinates: {
-            type: [Number],
-            required: true,
+const userLocationSchema = new mongoose.Schema(
+    {
+        userId: { type: Number, required: true },
+        role: String,
+        location: {
+            type: {
+                type: String,
+                enum: ["Point"],
+                required: true,
+            },
+            coordinates: {
+                type: [Number],
+                required: true,
+            },
         },
     },
-    updatedAt: { type: Date, default: Date.now },
-    createdAt: { type: Date, default: Date.now },
-});
+    {
+        timestamps: true
+    }
+);
 
 userLocationSchema.index({ location: "2dsphere" });
 

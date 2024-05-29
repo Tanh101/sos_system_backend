@@ -3,6 +3,7 @@ const db = require("../models/index");
 const { ITEM_PER_PAGE, PAGE } = require("../../constants/constants");
 const { Op } = require("sequelize");
 const User = db.users;
+const userLocationService = require('../../services/userLocationService/userLocation.service');
 
 exports.profile = async (req, res) => {
     try {
@@ -102,3 +103,23 @@ exports.filterUser = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+exports.createOrUpdateUserLocation = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { latitude, longitude } = req.body;
+        if (!latitude || !longitude) {
+            return res.status(400).json({
+                message: "Latitude and Longitude is required"
+            });
+        }
+        const userLocation = await userLocationService.createOrUpdate(userId, latitude, longitude);
+        console.log(userLocation);
+        if (userLocation) {
+            return res.status(200).json(userLocation);
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

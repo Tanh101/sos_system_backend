@@ -31,15 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         requestTypeId: {
             type: DataTypes.BIGINT(20),
-            allowNull: false,
+            allowNull: true,
             foreignKey: true
         },
         content: {
             type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [10, 500]
-            }
+            allowNull: true,
         },
         isEmergency:
         {

@@ -19,9 +19,31 @@ exports.getUsersInArea = async (latitude, longitude, radius) => {
     }
 };
 
-exports.update = async (userId, latitude, longitude) => {
+exports.createOrUpdate = async (userId, latitude, longitude) => {
+    try {
+        const userLocation = await UserLocation.findOneAndUpdate(
+            { userId: userId },
+            {
+                $set: {
+                    location: {
+                        type: "Point",
+                        coordinates: [longitude, latitude],
+                    },
+                },
+            },
+            {
+                new: true,
+                upsert: true,
+                timestamps: true,
+            }
+        );
 
-}
+        return userLocation;
+    } catch (error) {
+        console.error("Error updating user location:", error);
+        throw error;
+    }
+};
 
 
 exports.getDistance = async (origin, destination) => {

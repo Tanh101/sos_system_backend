@@ -20,15 +20,12 @@ module.exports = {
             },
             request_type_id: {
                 type: Sequelize.BIGINT(20),
-                allowNull: false,
+                allowNull: true,
                 foreignKey: true
             },
             content: {
                 type: Sequelize.STRING,
-                allowNull: false,
-                validate: {
-                    len: [10, 500]
-                }
+                allowNull: true,
             },
             is_emergency:
             {

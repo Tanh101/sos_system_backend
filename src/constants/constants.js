@@ -5,11 +5,13 @@ const userStatusList = {
 };
 const ITEM_PER_PAGE = 10;
 const PAGE = 1;
+
 const REQUEST_STATUS = {
-    "0": "pending",
-    "1": "approved",
-    "2": "completed",
-    "3": "rejected"
+    PENDING: 0,
+    APPROVED: 1,
+    RESCUING: 2,
+    RESCUED: 3,
+    REJECTED: 4
 };
 
 const VOTE_TYPE = {
@@ -17,7 +19,7 @@ const VOTE_TYPE = {
     "downvote": 0,
     "none": 2
 }
-    
+
 module.exports = {
     userStatusList,
     ITEM_PER_PAGE,
