@@ -1,6 +1,8 @@
 const { validateSignup } = require('../app/validations/signup.validation');
 const { validateSignin } = require('../app/validations/signin.validation');
-const { validateCreateRequest } = require('../app/validations/createRequest.validation');
+const { validateCreateEmergencyRequest,
+    validateCreateNormalRequest
+} = require('../app/validations/createRequest.validation');
 const { validatePagination } = require('../app/validations/pagination.validation');
 
 const validationMiddlewares = {
@@ -11,6 +13,7 @@ const validationMiddlewares = {
         };
         next();
     },
+
     signin: async (req, res, next) => {
         const { error } = validateSignin(req.body);
         if (error) {
@@ -18,13 +21,29 @@ const validationMiddlewares = {
         };
         next();
     },
+
     createRequest: async (req, res, next) => {
-        const { error } = validateCreateRequest(req.body);
-        if (error) {
-            return res.status(400).json({ message: error.details[0].message });
-        };
+        const { isEmergency } = req.body;
+
+        if (isEmergency === undefined) {
+            return res.status(400).json({ message: "isEmergecy filed is required" });
+        }
+
+        if (isEmergency) {
+            const { error } = validateCreateEmergencyRequest(req.body);
+            if (error) {
+                return res.status(400).json({ message: error.details[0].message });
+            };
+        } else {
+            const { error } = validateCreateNormalRequest(req.body);
+            if (error) {
+                return res.status(400).json({ message: error.details[0].message });
+            };
+        }
+
         next();
     },
+
     pagination: async (req, res, next) => {
         const { error } = validatePagination(req.query);
         if (error) {

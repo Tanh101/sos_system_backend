@@ -19,24 +19,43 @@ exports.isExistRequestType = async (id) => {
     return true;
 };
 
-exports.create = async (userId, requests) => {
+exports.createNormalRequest = async (userId, isEmergency, requestTypeId, content,
+    latitude, longitude, address) => {
     try {
-        const newRequest = Request.create({
-            userId: userId,
-            requestTypeId: requests.requestTypeId,
-            isEmergency: requests.isEmergency,
-            content: requests.content,
-            latitude: requests.latitude,
-            longitude: requests.longitude,
-            address: requests.address,
+        const newRequest = await Request.create({
+            userId,
+            requestTypeId,
+            content,
+            latitude,
+            longitude,
+            address,
+            isEmergency,
         });
 
         return newRequest;
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        throw error;
     }
 };
+
+exports.createEmergencyRequest = async (userId, isEmergency, latitude, longitude, address) => {
+    try {
+        const newRequest = await Request.create({
+            isEmergency: isEmergency,
+            userId: userId,
+            latitude: latitude,
+            longitude: longitude,
+            address: address
+        })
+
+        return newRequest;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
+}
 
 exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
     try {
@@ -167,20 +186,76 @@ exports.getById = async (id) => {
     }
 };
 
-exports.isExistRequest = async (id) => {
+exports.getUserRequestByStatus = async (userId, isEmergency, status, itemPerPage, page) => {
     try {
-        const request = await Request.findOne({
-            where: {
-                id: id
-            }
+        let query = {};
+
+        isEmergency
+            ? (query = { userId: userId, status: status, isEmergency: isEmergency })
+            : (query = { userId: userId, status: status });
+
+        const requests = await Request.findAndCountAll({
+            where: query,
+            limit: itemPerPage,
+            offset: (page - 1) * itemPerPage,
+            order: [
+                ["isEmergency", "DESC"],
+                ["createdAt", "DESC"],
+            ],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'id',
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: userId
+                    },
+                    required: false
+                }
+            ],
         });
 
-        if (!request) {
-            return false;
-        }
-
-        return true;
+        return requests;
     } catch (error) {
         console.log(error)
+        throw error;
     }
 };
+
+
+exports.isExistRequest = async (requestId) => {
+    try {
+        const request = Request.findByPk(requestId);
+        if (request) {
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
