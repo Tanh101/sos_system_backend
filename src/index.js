@@ -34,6 +34,7 @@ const rescuerController = require("./app/controllers/socket/rescuer.controller")
 const locationController = require("./app/controllers/socket/location.controller");
 const authMiddleware = require("./middlewares/socket/auth.middleware");
 const notificationController = require("./app/controllers/socket/notification.controller");
+const statisticRoute = require("./routes/statistic.route");
 
 // connect to mongodb
 mongoDB.connect();
@@ -56,6 +57,9 @@ app.use("/api/requests", requestRoute);
 
 //requestType route
 app.use("/api/type", requestTypeRoute);
+
+//statistic route
+app.use('/api/statistic', statisticRoute);
 
 let rescuers = [];
 socketIo.use((socket, next) => {
