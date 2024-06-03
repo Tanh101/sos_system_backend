@@ -85,6 +85,9 @@ module.exports = (sequelize, DataTypes) => {
         scopes: {
             withPassword: {
                 attributes: {}
+            },
+            withoutPhone: {
+                attributes: { exclude: ['phoneNumber', 'password', 'refreshToken'] }
             }
         }
     });

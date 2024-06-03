@@ -78,6 +78,7 @@ exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
                     model: User,
                     as: 'users',
                     attributes: [
+                        'id',
                         'name',
                         'avatar',
                     ],
