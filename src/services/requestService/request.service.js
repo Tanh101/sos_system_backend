@@ -246,7 +246,6 @@ exports.getUserRequestByStatus = async (userId, isEmergency, status, itemPerPage
     }
 };
 
-
 exports.isExistRequest = async (requestId) => {
     try {
         const request = Request.findByPk(requestId);
@@ -255,6 +254,27 @@ exports.isExistRequest = async (requestId) => {
         }
 
         return false;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+exports.updateRequest = async (requestId, userId, status) => {
+    try {
+        const request = await Request.update(
+            {
+                status: status,
+            },
+            {
+                where: {
+                    id: requestId,
+                    userId: userId,
+                },
+            }
+        );
+
+        return request;
     } catch (error) {
         console.log(error);
         throw error;
