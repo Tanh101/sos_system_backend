@@ -4,6 +4,7 @@ const { validateCreateEmergencyRequest,
     validateCreateNormalRequest
 } = require('../app/validations/createRequest.validation');
 const { validatePagination } = require('../app/validations/pagination.validation');
+const { validateGetMessages } = require('../app/validations/getMessages.validation');
 
 const validationMiddlewares = {
     signup: async (req, res, next) => {
@@ -46,6 +47,13 @@ const validationMiddlewares = {
 
     pagination: async (req, res, next) => {
         const { error } = validatePagination(req.query);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        };
+        next();
+    },
+    getMessages: async (req, res, next) => {
+        const { error } = validateGetMessages(req.params);
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         };

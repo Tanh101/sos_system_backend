@@ -16,31 +16,31 @@ module.exports = {
         const requestTypeName = [
             {
                 name: "Cứu thương",
-                icon_url: "https://img.icons8.com/ios/452/ambulance.png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716899065498"
             },
             {
                 name: "Lũ Lụt",
-                icon_url: "https://sossystem.s3.amazonaws.com/flood+(1).png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716898992947"
             },
             {
                 name: "Hỏa Hoạn",
-                icon_url: "https://img.icons8.com/ios/452/fire-element.png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716898944582"
             },
             {
                 name: "Tai Nạn Giao Thông",
-                icon_url: "https://img.icons8.com/ios/452/car-crash.png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716898854926"
             },
             {
                 name: "Dịch bệnh",
-                icon_url: "https://img.icons8.com/ios/452/medical-bag.png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716899144350"
             },
             {
                 name: "Đuối nước",
-                icon_url: "https://img.icons8.com/ios/452/forest.png"
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716899038037"
             },
             {
-                name: "Mưa bảo",
-                icon_url: "https://img.icons8.com/ios/452/rain.png"
+                name: "Mưa bão",
+                icon_url: "https://sossystem.s3.us-east-1.amazonaws.com/1716898895246"
             }
         ]
         requestTypeName.forEach(async (requestType) => {
