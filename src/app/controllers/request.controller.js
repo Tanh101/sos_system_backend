@@ -167,3 +167,31 @@ exports.getUserRequestByStatus = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
+
+exports.updateRequestStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let status = req.query.status;
+        const userId = req.user.id;
+
+        const validStatuses = [
+            REQUEST_STATUS.PENDING,
+            REQUEST_STATUS.RESCUED,
+            REQUEST_STATUS.RESCUING,
+            REQUEST_STATUS.REJECTED
+        ];
+
+        status = parseInt(status);
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
+        }
+
+        await requestService.updateRequest(id, userId, status);
+
+        return res.status(200).json({ message: "Update request status successfully" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
