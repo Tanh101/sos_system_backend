@@ -28,6 +28,7 @@ const uploadroute = require("./routes/upload.route");
 const requestRoute = require("./routes/request.route");
 const requestTypeRoute = require("./routes/requestType.route");
 const conversationRoute = require("./routes/conversation.route");
+const commentRoute = require("./routes/comment.route");
 const port = systemConfig.port || 3000;
 
 const clientController = require("./app/controllers/socket/client.controller");
@@ -37,6 +38,7 @@ const authMiddleware = require("./middlewares/socket/auth.middleware");
 const notificationController = require("./app/controllers/socket/notification.controller");
 const statisticRoute = require("./routes/statistic.route");
 const conversationController = require("./app/controllers/socket/conversation.controller");
+const commentController = require("./app/controllers/socket/comment.controller");
 
 // connect to mongodb
 mongoDB.connect();
@@ -65,6 +67,9 @@ app.use('/api/statistic', statisticRoute);
 
 // conversation route
 app.use("/api/conversation", conversationRoute);
+
+// comment route
+app.use("/api/comments", commentRoute);
 
 let rescuers = [];
 socketIo.use((socket, next) => {
@@ -97,6 +102,7 @@ socketIo.on("connection", (socket) => {
     locationController(socketIo, socket);
     notificationController(socketIo, socket);
     conversationController(socketIo, socket);
+    commentController(socketIo, socket);
 });
 
 socketIo.on("disconnect", (socket) => {
