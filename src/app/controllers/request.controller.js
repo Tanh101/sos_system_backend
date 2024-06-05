@@ -93,7 +93,7 @@ exports.get = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || PAGE;
         const itemPerPage = parseInt(req.query.itemPerPage) || ITEM_PER_PAGE;
-        const status = req.query.status || REQUEST_STATUS.PENDING;
+        const status = req.query.status;
         const isEmergency = req.query.isEmergency;
         const userId = req.user.id;
 
@@ -196,10 +196,34 @@ exports.updateRequestStatus = async (req, res) => {
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status" });
         }
+        if (role === USER_ROLE.USER) {
+            await requestService.updateMyRequest(id, userId, status);
+        }
 
-        await requestService.updateRequest(id, userId, status);
+        if (role === USER_ROLE.RESCUER) {
+            await requestService.updateRequestStatusByRescuer(userId, id, status);
+        }
 
-        return res.status(200).json({ message: "Update request status successfully" });
+        const newReq = requestService.getDetail(id, userId);
+        if (newReq)
+            return res.status(200).json(newReq);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getEmergencyRequestIsTracking = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || PAGE;
+        const itemPerPage = parseInt(req.query.itemPerPage) || ITEM_PER_PAGE;
+        const userId = req.user.id;
+
+        const requests = await requestService.getEmergencyIsTracking(userId, page, itemPerPage);
+
+        const requestData = await mappingRequestDataToPagination(userId, requests, page, itemPerPage);
+
+        return res.status(200).json(requestData);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
