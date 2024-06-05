@@ -5,6 +5,7 @@ const { validateCreateEmergencyRequest,
 } = require('../app/validations/createRequest.validation');
 const { validatePagination } = require('../app/validations/pagination.validation');
 const { validateGetMessages } = require('../app/validations/getMessages.validation');
+const { validateCreateComment } = require('../app/validations/createComment.validation.js');
 
 const validationMiddlewares = {
     signup: async (req, res, next) => {
@@ -54,6 +55,13 @@ const validationMiddlewares = {
     },
     getMessages: async (req, res, next) => {
         const { error } = validateGetMessages(req.params);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        };
+        next();
+    },
+    createComment: async (req, res, next) => {
+        const { error } = validateCreateComment(req.body);
         if (error) {
             return res.status(400).json({ message: error.details[0].message });
         };

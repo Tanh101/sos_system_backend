@@ -2,6 +2,7 @@ const db = require("../models/index");
 const requestService = require("../../services/requestService/request.service");
 const requestMediaService = require("../../services/requestMediaService/requestMedia.service");
 const userLocationService = require("../../services/userLocationService/userLocation.service");
+const commentService = require("../../services/commentService/comment.service");
 const {
     PAGE,
     REQUEST_STATUS,
@@ -74,9 +75,12 @@ const mappingRequestDataToPagination = async (userId, requests, page, itemPerPag
                     distance = parseFloat(distance.toFixed(2));
                 }
 
+                const commentCount = await commentService.count(request.id);
+
                 return {
                     ...request.dataValues,
                     distance: distance,
+                    commentCount,
                 };
             })
         ),
@@ -123,6 +127,7 @@ exports.getById = async (req, res) => {
 
         let distance;
 
+
         const userLocation = await userLocationService.getUserLocation(userId);
         if (userLocation) {
             const origin = {
@@ -138,9 +143,14 @@ exports.getById = async (req, res) => {
             distance = await userLocationService.getDistance(origin, destination);
             distance = parseFloat(distance.toFixed(2))
         }
+        const commentCount = await commentService.count(id);
+        const comments = await commentService.get(id);
+        
         return res.status(200).json({
             ...request.dataValues,
             distance: distance,
+            commentCount,
+            comments,
         });
 
     } catch (error) {
