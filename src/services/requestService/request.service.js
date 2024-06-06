@@ -257,7 +257,7 @@ exports.getUserRequestByStatus = async (userId, isEmergency, status, itemPerPage
 
 exports.isExistRequest = async (requestId) => {
     try {
-        const request = Request.findByPk(requestId);
+        const request = await Request.findByPk(requestId);
         if (request) {
             return true;
         }
@@ -269,7 +269,7 @@ exports.isExistRequest = async (requestId) => {
     }
 }
 
-exports.updateRequest = async (requestId, userId, status) => {
+exports.updateMyRequest = async (requestId, userId, status) => {
     try {
         const request = await Request.update(
             {
@@ -372,3 +372,50 @@ exports.getEmergencyIsTracking = async (userId, page, itemPerPage) => {
         throw error;
     }
 };
+
+exports.getRequestFromDangerArea = async (requestIds, page, itemPerPage) => {
+    try {
+        const requests = await Request.findAndCountAll({
+            where: {
+                id: {
+                    [Sequelize.Op.in]: requestIds
+                }
+            },
+            limit: itemPerPage,
+            offset: (page - 1) * itemPerPage,
+            order: [
+                ["isEmergency", "DESC"],
+                ["createdAt", "DESC"],
+            ],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'id',
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'id',
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+            ],
+        });
+
+        return requests;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}

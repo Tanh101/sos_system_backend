@@ -25,11 +25,17 @@ const USER_ROLE = {
     RESCUER: "rescuer"
 }
 
+const DANGER_AREA_STATUS = {
+    ACTIVE: "active",
+    DELETED: "deleted"
+};
+
 module.exports = {
     ITEM_PER_PAGE,
     PAGE,
     REQUEST_STATUS,
     VOTE_TYPE,
     USER_STATUS,
-    USER_ROLE
+    USER_ROLE,
+    DANGER_AREA_STATUS,
 };
