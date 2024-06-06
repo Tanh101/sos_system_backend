@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../../app/models/index");
+const { REQUEST_STATUS } = require("../../constants/constants");
 const Vote = db.votes;
 const Request = db.requests;
 const RequestType = db.requestTypes;
@@ -61,9 +62,16 @@ exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
     try {
         let query = {};
 
-        isEmergency
-            ? (query = { status: status, isEmergency: isEmergency })
-            : (query = { status: status });
+        if (status) {
+            query = { status: status };
+        }
+        if (isEmergency) {
+            query = { isEmergency: isEmergency };
+        }
+
+        if (status && isEmergency) {
+            query = { status: status, isEmergency: isEmergency };
+        }
 
         const requests = await Request.findAndCountAll({
             where: query,
@@ -71,6 +79,7 @@ exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
             offset: (page - 1) * itemPerPage,
             order: [
                 ["isEmergency", "DESC"],
+                ["status", "ASC"],
                 ["createdAt", "DESC"],
             ],
             include: [
@@ -280,3 +289,86 @@ exports.updateRequest = async (requestId, userId, status) => {
         throw error;
     }
 }
+
+exports.updateRequestStatusByRescuer = async (rescuerId, requestId, status) => {
+    try {
+        const request = await Request.update(
+            {
+                status: status,
+                rescuerId: rescuerId,
+
+            },
+            {
+                where: {
+                    id: requestId,
+                },
+            }
+        );
+
+        return request;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+exports.getEmergencyIsTracking = async (userId, page, itemPerPage) => {
+    try {
+        const query = {
+            userId: userId,
+            status: {
+                [Sequelize.Op.or]: [REQUEST_STATUS.RESCUING, REQUEST_STATUS.PENDING]
+            },
+            isEmergency: 1
+        }
+
+        const requests = await Request.findAndCountAll({
+            where: query,
+            limit: itemPerPage,
+            offset: (page - 1) * itemPerPage,
+            order: [
+                ["isEmergency", "DESC"],
+                ["createdAt", "DESC"],
+            ],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'id',
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: userId
+                    },
+                    required: false
+                }
+            ],
+        });
+
+        return requests;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+};
