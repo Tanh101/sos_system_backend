@@ -107,13 +107,14 @@ exports.filterUser = async (req, res) => {
 exports.createOrUpdateUserLocation = async (req, res) => {
     try {
         const userId = req.user.id;
+        const role = req.user.role;
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude) {
             return res.status(400).json({
                 message: "Latitude and Longitude is required"
             });
         }
-        const userLocation = await userLocationService.createOrUpdate(userId, latitude, longitude);
+        const userLocation = await userLocationService.createOrUpdate(userId, role, latitude, longitude);
         console.log(userLocation);
         if (userLocation) {
             return res.status(200).json(userLocation);

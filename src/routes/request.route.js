@@ -13,6 +13,7 @@ router.put('/:id', authMiddleware.getAccessToken, authMiddleware.checkAuth, requ
 router.post('/:id/vote', authMiddleware.getAccessToken, authMiddleware.checkAuth, voteController.vote);
 router.get('/me', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.getUserRequestByStatus);
 router.get('/active', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.getEmergencyRequestIsTracking);
+router.get('/rescuer', authMiddleware.getAccessToken, authMiddleware.checkRescuer, requestController.getRequestByRescuer);
 router.get('/', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.get);
 router.get('/:id', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.getById);
 router.get('/:id/comments', authMiddleware.getAccessToken, authMiddleware.checkAuth, commentController.get);

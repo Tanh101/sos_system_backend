@@ -118,7 +118,6 @@ exports.get = async (req, res) => {
     }
 };
 
-
 exports.getById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -263,6 +262,24 @@ exports.getRequestFromDangerArea = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getRequestByRescuer = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || PAGE;
+        const itemPerPage = parseInt(req.query.itemPerPage) || ITEM_PER_PAGE;
+        const status = req.query.status;
+        const userId = req.user.id;
+
+        const requests = await requestService.getRequestByRescuerOrPending(userId, status, page, itemPerPage);
+
+        const requestData = await mappingRequestDataToPagination(userId, requests, page, itemPerPage);
+
+        return res.status(200).json(requestData);
+    } catch (error) {
+        console.error(error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
