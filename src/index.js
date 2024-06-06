@@ -29,6 +29,7 @@ const requestRoute = require("./routes/request.route");
 const requestTypeRoute = require("./routes/requestType.route");
 const conversationRoute = require("./routes/conversation.route");
 const commentRoute = require("./routes/comment.route");
+const dangerAreaRoute = require("./routes/danger.route");
 const port = systemConfig.port || 3000;
 
 const clientController = require("./app/controllers/socket/client.controller");
@@ -71,6 +72,9 @@ app.use("/api/conversation", conversationRoute);
 // comment route
 app.use("/api/comments", commentRoute);
 
+// danger area route
+app.use("/api/danger", dangerAreaRoute);
+
 let rescuers = [];
 socketIo.use((socket, next) => {
     authMiddleware.checkAuthHeader(socket, next);
@@ -80,7 +84,7 @@ socketIo.on("connection", (socket) => {
     console.log(`User ${socket.id} with userId ${socket.user.id} connected`);
     const role = socket.user.role;
     socket.join(role);
-    socket.join(socket.user.id);
+    socket.join(`user_${socket.user.id}`);
 
     // auth middleware
     socket.use((package, next) => {

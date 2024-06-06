@@ -1,6 +1,7 @@
 const jwtConfig = require("../app/configs/jwt.config");
 const { verifyToken } = require("../services/authService/auth.service");
 const db = require("../app/models/index");
+const { USER_ROLE } = require("../constants/constants");
 const User = db.users;
 
 const authMiddleware = {
@@ -69,7 +70,42 @@ const authMiddleware = {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        if (user.role !== 'admin') {
+        if (user.role !== USER_ROLE.ADMIN) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        req.user = user;
+
+        next();
+    },
+
+    checkRescuer: async (req, res, next) => {
+        const accessToken = req.accessToken;
+        if (!accessToken) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const accessTokenSecret = jwtConfig.accessTokenSecret;
+
+        const verified = await verifyToken(
+            accessToken,
+            accessTokenSecret
+        );
+        if (!verified) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const user = await User.scope('withPassword').findByPk(verified.payload.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const refreshToken = user.refreshToken;
+        if (!refreshToken) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        if (user.role !== USER_ROLE.RESCUER) {
             return res.status(403).json({ message: "Forbidden" });
         }
 

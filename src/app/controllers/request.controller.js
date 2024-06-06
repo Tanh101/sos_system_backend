@@ -3,10 +3,14 @@ const requestService = require("../../services/requestService/request.service");
 const requestMediaService = require("../../services/requestMediaService/requestMedia.service");
 const userLocationService = require("../../services/userLocationService/userLocation.service");
 const commentService = require("../../services/commentService/comment.service");
+const dangerAreaService = require("../../services/dangerAreaService/dangerArea.service");
+
 const {
     PAGE,
     REQUEST_STATUS,
     ITEM_PER_PAGE,
+    USER_ROLE,
+    DANGER_AREA_STATUS,
 } = require("../../constants/constants");
 
 exports.create = async (req, res) => {
@@ -145,7 +149,7 @@ exports.getById = async (req, res) => {
         }
         const commentCount = await commentService.count(id);
         const comments = await commentService.get(id);
-        
+
         return res.status(200).json({
             ...request.dataValues,
             distance: distance,
@@ -183,6 +187,7 @@ exports.updateRequestStatus = async (req, res) => {
         const { id } = req.params;
         let status = req.query.status;
         const userId = req.user.id;
+        const role = req.user.role;
 
         const validStatuses = [
             REQUEST_STATUS.PENDING,
@@ -224,6 +229,38 @@ exports.getEmergencyRequestIsTracking = async (req, res) => {
         const requestData = await mappingRequestDataToPagination(userId, requests, page, itemPerPage);
 
         return res.status(200).json(requestData);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getRequestFromDangerArea = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || PAGE;
+        const itemPerPage = parseInt(req.query.itemPerPage) || ITEM_PER_PAGE;
+
+        const status = req.query.status || DANGER_AREA_STATUS.ACTIVE;
+        const dangerArea = await dangerAreaService.getByStatus(status);
+
+        const requestId = dangerArea.map((area) => area.requestId);
+
+
+        const requests = await requestService.getRequestFromDangerArea(requestId, page, itemPerPage);
+
+        const totalPage = Math.ceil(requests.count / itemPerPage);
+
+        const paginations = {
+            totalResult: requests.count,
+            totalPage,
+            currentPage: page,
+            itemPerPage,
+        };
+
+        return res.status(200).json({
+            requests: requests.rows,
+            paginations,
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
