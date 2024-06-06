@@ -1,6 +1,7 @@
 const LocationService = require("../../../services/locationService/location.service");
 const NotificationService = require("../../../services/notificationService/notification.service");
 const RequestService = require("../../../services/requestService/request.service");
+const UserLocationService = require("../../../services/userLocationService/userLocation.service")
 
 module.exports = (io, socket) => {
     socket.on("startSharingLocation", async (data) => {
@@ -137,5 +138,39 @@ module.exports = (io, socket) => {
         // delete room
 
         // Potentially, remove the location document from MongoDB if needed
+    });
+
+    socket.on("getRescuerLocation", async (data) => {
+        try {
+            const rescuerId = data.rescuerId;
+
+            const rescuerLocation = await UserLocationService.getUserLocation(rescuerId);
+
+            socket.emit("returnRescuerLocation", {
+                latitude: rescuerLocation.location.coordinates[1],
+                longitude: rescuerLocation.location.coordinates[0],
+            });
+
+        } catch (error) {
+            console.error("Error get rescuer location:", error.message);
+        }
+    });
+
+    socket.on("getAllRescuerLocation", async () => {
+        try {
+            const result = await UserLocationService.getAllRescuerLocation();
+
+            const rescuerLocatons = result.map((locaiton, index) => {
+                return {
+                    latitude: locaiton.location.coordinates[1],
+                    longitude: locaiton.location.coordinates[0],
+                }
+            })
+
+            socket.emit("returnAllRescuerLocation", { rescuerLocatons })
+
+        } catch (error) {
+            console.error("Error get all rescuer location:", error.message);
+        }
     });
 };
