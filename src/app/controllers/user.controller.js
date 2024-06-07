@@ -115,7 +115,7 @@ exports.createOrUpdateUserLocation = async (req, res) => {
             });
         }
         const userLocation = await userLocationService.createOrUpdate(userId, role, latitude, longitude);
-        console.log(userLocation);
+        
         if (userLocation) {
             return res.status(200).json(userLocation);
         }

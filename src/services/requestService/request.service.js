@@ -314,6 +314,7 @@ exports.updateRequestStatusByRescuer = async (rescuerId, requestId, status) => {
 
 exports.getEmergencyIsTracking = async (userId, page, itemPerPage) => {
     try {
+        console.log(userId, page, itemPerPage);
         const query = {
             userId: userId,
             status: {

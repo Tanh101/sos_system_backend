@@ -24,8 +24,8 @@ module.exports = (io, socket) => {
                 userId
             );
 
-            socket.to(userId).emit("notificationList", notifications);
-            console.log(`user ${userId} got notification`);
+            socket.to(`user_${userId}`).emit("notificationList", notifications);
+            console.log(`sfasfd ${userId} here`);
         } catch (error) {
             console.error("Error in getNotification:", error);
         }
