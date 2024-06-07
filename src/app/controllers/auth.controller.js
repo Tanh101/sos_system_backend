@@ -7,7 +7,7 @@ const promisify = require("util").promisify;
 const User = db.users;
 const AuthService = require('../../services/authService/auth.service');
 
-exports.register = async(req, res) => {
+exports.register = async (req, res) => {
     try {
         const { email, password, repeatPassword, name, dob, phoneNumber, address } = req.body;
         const user = await User.findOne({ where: { email: email } });
@@ -39,7 +39,7 @@ exports.register = async(req, res) => {
     }
 }
 
-exports.login = async(req, res) => {
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -100,7 +100,7 @@ exports.login = async(req, res) => {
     }
 }
 
-exports.refreshToken = async(req, res) => {
+exports.refreshToken = async (req, res) => {
     try {
         // get access token from header
         const accessTokenFromHeader = req.accessToken;
@@ -140,6 +140,7 @@ exports.refreshToken = async(req, res) => {
             id: user.id,
             email: user.email,
             role: user.role,
+            name: user.name,
         };
 
         const newAccessToken = await AuthService.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
@@ -156,7 +157,7 @@ exports.refreshToken = async(req, res) => {
     }
 }
 
-exports.logout = async(req, res) => {
+exports.logout = async (req, res) => {
     try {
         // get user from access token
         const { id } = req.user;

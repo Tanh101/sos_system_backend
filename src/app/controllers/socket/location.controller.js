@@ -5,9 +5,12 @@ const UserLocationService = require("../../../services/userLocationService/userL
 
 module.exports = (io, socket) => {
     socket.on("startSharingLocation", async (data) => {
+        console.log("startSharingLocation")
         try {
             const { requestId, latitude, longitude } = data;
             const userId = socket.user.id;
+            const userName = socket.user.name;
+
 
             if (!requestId) {
                 return socket.emit("error", "Request ID is required");
@@ -42,8 +45,15 @@ module.exports = (io, socket) => {
             console.log(`User started sharing location in room ${requestId}`);
 
             // Create a notification for specific users
-            const notificationMsg = `User ${userId} is sharing location`;
-            await NotificationService.create(userId, notificationMsg);
+            const notificationMsg = `Người dùng ${userName} đã tạo yêu cầu khẩn cấp.`;
+
+            //find all rescuer near the user
+            const rescuerLocations = await UserLocationService.getRescuerNearby({ latitude, longitude });
+            console.log("rescuerLocations", rescuerLocations);
+
+            rescuerLocations.forEach(async (rescuerLocation) => {
+                await NotificationService.create(rescuerLocation.userId, notificationMsg);
+            });
 
             return socket.emit("locationSharingStarted", { requestId });
         } catch (error) {
@@ -119,6 +129,7 @@ module.exports = (io, socket) => {
     socket.on("stopSharingLocation", async (data) => {
         const requestId = data.requestId;
         const request = await RequestService.getById(requestId);
+        const userId = socket.user.id;
 
         // Verify that the Request ID is valid (exists in your SQL database)
         if (!request) {

@@ -30,6 +30,8 @@ const DANGER_AREA_STATUS = {
     DELETED: "deleted"
 };
 
+const MAX_DISTANCE = 15000;
+
 module.exports = {
     ITEM_PER_PAGE,
     PAGE,
@@ -38,4 +40,5 @@ module.exports = {
     USER_STATUS,
     USER_ROLE,
     DANGER_AREA_STATUS,
+    MAX_DISTANCE
 };

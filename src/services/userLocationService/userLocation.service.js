@@ -1,7 +1,7 @@
 const haversine = require("haversine-distance");
 
 const UserLocation = require("../../app/models/mongo/userLocation");
-const { USER_ROLE } = require("../../constants/constants");
+const { USER_ROLE, MAX_DISTANCE } = require("../../constants/constants");
 
 exports.getUsersInArea = async (latitude, longitude, radius) => {
     try {
@@ -86,3 +86,29 @@ exports.getAllRescuerLocation = async () => {
         throw error;;
     }
 }
+
+exports.getRescuerNearby = async (location) => {
+    try {
+        if (!location || typeof location.longitude !== 'number' || typeof location.latitude !== 'number') {
+            throw new Error('Invalid location coordinates');
+        }
+
+        const rescuers = await UserLocation.find({
+            role: USER_ROLE.RESCUER,
+            location: {
+                $near: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [location.longitude, location.latitude],
+                    },
+                    $maxDistance: MAX_DISTANCE,
+                },
+            },
+        });
+
+        return rescuers;
+    } catch (error) {
+        console.error('Error finding nearby rescuers:', error);
+        throw error;
+    }
+};
