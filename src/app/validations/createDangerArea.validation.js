@@ -5,8 +5,6 @@ const validator = (schema) => (payload) =>
 
 const createDangerAreaSchema = Joi.object({
     requestId: Joi.number().integer().required(),
-    latitude: Joi.number().required(),
-    longitude: Joi.number().required(),
     message: Joi.string().min(10).max(500).required(),
     radius: Joi.number().integer().required(),
 });

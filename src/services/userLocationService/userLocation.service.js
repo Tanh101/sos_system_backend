@@ -1,6 +1,7 @@
 const haversine = require("haversine-distance");
 
 const UserLocation = require("../../app/models/mongo/userLocation");
+const { USER_ROLE } = require("../../constants/constants");
 
 exports.getUsersInArea = async (latitude, longitude, radius) => {
     try {
@@ -19,7 +20,7 @@ exports.getUsersInArea = async (latitude, longitude, radius) => {
     }
 };
 
-exports.createOrUpdate = async (userId, latitude, longitude) => {
+exports.createOrUpdate = async (userId, role, latitude, longitude) => {
     try {
         const userLocation = await UserLocation.findOneAndUpdate(
             { userId: userId },
@@ -29,6 +30,7 @@ exports.createOrUpdate = async (userId, latitude, longitude) => {
                         type: "Point",
                         coordinates: [longitude, latitude],
                     },
+                    role: role
                 },
             },
             {
@@ -69,5 +71,18 @@ exports.getUserLocation = async (userId) => {
     catch (error) {
         console.log(error);
         throw error;
+    }
+}
+
+exports.getAllRescuerLocation = async () => {
+    try {
+        const rescuerLocation = await UserLocation.find({
+            role: USER_ROLE.RESCUER,
+        });
+
+        return rescuerLocation;
+    } catch (error) {
+        console.log(error);
+        throw error;;
     }
 }

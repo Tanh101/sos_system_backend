@@ -410,6 +410,95 @@ exports.getRequestFromDangerArea = async (requestIds, page, itemPerPage) => {
                     model: RequestMedia,
                     as: 'requestMedia',
                 },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: requestIds
+                    },
+                    required: false
+                }
+            ],
+        });
+
+        return requests;
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
+exports.getRequestByRescuerOrPending = async (rescuerId, status, page, itemPerPage) => {
+    try {
+        let whereCondition = {};
+
+        if (status) {
+            whereCondition = {
+                [Sequelize.Op.or]: [
+                    {
+                        rescuerId: rescuerId,
+                        status: status
+                    },
+                ]
+            };
+        } else {
+            whereCondition = {
+                [Sequelize.Op.or]: [
+                    {
+                        rescuerId: rescuerId,
+                    },
+                    {
+                        status: REQUEST_STATUS.PENDING
+                    }
+                ]
+            };
+        }
+
+        const requests = await Request.findAndCountAll({
+            where: whereCondition,
+            limit: itemPerPage,
+            offset: (page - 1) * itemPerPage,
+            order: [
+                ["isEmergency", "DESC"],
+                ["status", "ASC"],
+                ["createdAt", "DESC"],
+            ],
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: [
+                        'name',
+                        'avatar',
+                    ],
+                },
+                {
+                    model: RequestType,
+                    as: 'requestTypes',
+                    attributes: [
+                        'id',
+                        'name',
+                        'iconUrl'
+                    ],
+                },
+                {
+                    model: RequestMedia,
+                    as: 'requestMedia',
+                },
+                {
+                    model: Vote,
+                    as: 'votes',
+                    attributes: [
+                        'voteType',
+                    ],
+                    where: {
+                        userId: rescuerId
+                    },
+                    required: false
+                }
             ],
         });
 

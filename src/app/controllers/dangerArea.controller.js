@@ -5,17 +5,17 @@ const requestService = require('../../services/requestService/request.service');
 exports.create = async (req, res) => {
     try {
 
-        const { requestId, latitude, longitude, radius, message } = req.body;
+        const { requestId, radius, message } = req.body;
 
-        const isExistRequest = await requestService.isExistRequest(requestId);
-        if (!isExistRequest) {
+        const request = await requestService.getById(requestId);
+        if (!request) {
             return res.status(404).json({ message: "Request not found" });
         }
 
         const dangerArea = await dangerAreaService.create(
             requestId,
-            latitude,
-            longitude,
+            request.latitude,
+            request.longitude,
             radius,
             message
         );

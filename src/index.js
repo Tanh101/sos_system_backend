@@ -30,6 +30,7 @@ const requestTypeRoute = require("./routes/requestType.route");
 const conversationRoute = require("./routes/conversation.route");
 const commentRoute = require("./routes/comment.route");
 const dangerAreaRoute = require("./routes/danger.route");
+const seederRoute = require("./routes/seeder.route");
 const port = systemConfig.port || 3000;
 
 const clientController = require("./app/controllers/socket/client.controller");
@@ -74,6 +75,9 @@ app.use("/api/comments", commentRoute);
 
 // danger area route
 app.use("/api/danger", dangerAreaRoute);
+
+//seed route
+app.use("/api/seeder", seederRoute);
 
 let rescuers = [];
 socketIo.use((socket, next) => {
