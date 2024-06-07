@@ -41,6 +41,7 @@ const notificationController = require("./app/controllers/socket/notification.co
 const statisticRoute = require("./routes/statistic.route");
 const conversationController = require("./app/controllers/socket/conversation.controller");
 const commentController = require("./app/controllers/socket/comment.controller");
+const setupNotificationListener = require("./listeners/notification.listener");
 
 // connect to mongodb
 mongoDB.connect();
@@ -65,7 +66,7 @@ app.use("/api/requests", requestRoute);
 app.use("/api/type", requestTypeRoute);
 
 //statistic route
-app.use('/api/statistic', statisticRoute);
+app.use("/api/statistic", statisticRoute);
 
 // conversation route
 app.use("/api/conversation", conversationRoute);
@@ -79,10 +80,12 @@ app.use("/api/danger", dangerAreaRoute);
 //seed route
 app.use("/api/seeder", seederRoute);
 
-let rescuers = [];
 socketIo.use((socket, next) => {
     authMiddleware.checkAuthHeader(socket, next);
 });
+
+// global event listener
+setupNotificationListener(socketIo);
 
 socketIo.on("connection", (socket) => {
     console.log(`User ${socket.id} with userId ${socket.user.id} connected`);
@@ -114,6 +117,8 @@ socketIo.on("connection", (socket) => {
 });
 
 socketIo.on("disconnect", (socket) => {
+    socket.leave(socket.user.role);
+    socket.leave(`user_${socket.user.id}`);
     console.log(`User ${socket.id} with userId ${socket.user.id} disconnected`);
 });
 

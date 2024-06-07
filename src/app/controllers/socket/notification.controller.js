@@ -15,19 +15,4 @@ module.exports = (io, socket) => {
             console.error("Error in getNotification:", error);
         }
     });
-
-    // Listen for internal events
-    eventEmitter.on("newNotification", async (data) => {
-        try {
-            const userId = data.userId;
-            const notifications = await NotificationService.getNotification(
-                userId
-            );
-
-            socket.to(`user_${userId}`).emit("notificationList", notifications);
-            console.log(`sfasfd ${userId} here`);
-        } catch (error) {
-            console.error("Error in getNotification:", error);
-        }
-    });
 };

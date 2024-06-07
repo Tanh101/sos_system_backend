@@ -21,8 +21,8 @@ exports.create = async (userId, message) => {
     await notification.save();
     // Emit an event to notify the user to get the latest notifications
     eventEmitter.emit("newNotification", { userId });
-    eventEmitter.removeAllListeners("newNotification");
-    // console.log(`Creating notification for user ${userId}`);
+    // eventEmitter.removeAllListeners("newNotification");
+    console.log(`Creating notification for user ${userId}`);
 
     return notification;
 };
