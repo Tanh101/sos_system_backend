@@ -1,7 +1,7 @@
 const eventEmitter = require("../utils/eventEmitter");
 const NotificationService = require("../services/notificationService/notification.service");
 
-const setupNotificationListener = (io) => {
+exports.setupNotificationListener = (io) => {
     if (!eventEmitter.listenerCount("newNotification")) {
         eventEmitter.on("newNotification", async (data) => {
             try {
@@ -18,4 +18,38 @@ const setupNotificationListener = (io) => {
     }
 };
 
-module.exports = setupNotificationListener;
+exports.setupAcceptRequestListener = (io) => {
+    if (!eventEmitter.listenerCount("updateRequest")) {
+        eventEmitter.on("updateRequest", async (data) => {
+            try {
+                const userId = data.request.userId;
+                const notifications = await NotificationService.getNotification(
+                    userId
+                );
+                io.to(`user_${userId}`).emit("notificationList", notifications);
+
+                const roomName = `requestDetail_${data.request.id}`;
+                io.to(roomName).emit("updatedStatus", { status: data.request.status });
+            } catch (error) {
+                console.error("Error in newNotification listener:", error);
+            }
+        });
+    }
+}
+
+exports.setupdVoteListener = (io) => {
+    if (!eventEmitter.listenerCount("newVote")) {
+        eventEmitter.on("newVote", async (data) => {
+            try {
+                const userId = data.userId;
+                const notifications = await NotificationService.getNotification(userId);
+                io.to(`user_${userId}`).emit("notificationList", notifications);
+
+                const roomName = `requestDetail_${data.requestId}`;
+                io.to(roomName).emit("newVoteUpdate", { voteCount: data.voteCount, voteType: data.voteType });
+            } catch (error) {
+                console.error("Error in newNotification listener:", error);
+            }
+        });
+    }
+}

@@ -13,11 +13,13 @@ exports.markAsRead = (notificationId) => {
     );
 };
 
-exports.create = async (userId, message) => {
+exports.create = async (userId, message, requestId) => {
     const notification = new Notification({
         userId,
         message,
+        requestId,
     });
+    
     await notification.save();
     // Emit an event to notify the user to get the latest notifications
     eventEmitter.emit("newNotification", { userId });
