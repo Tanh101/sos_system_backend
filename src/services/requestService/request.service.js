@@ -267,9 +267,9 @@ exports.isExistRequest = async (requestId) => {
         console.log(error);
         throw error;
     }
-}
+};
 
-exports.updateMyRequest = async (requestId, userId, status) => {
+exports.updateRequestStatus = async (requestId, status) => {
     try {
         const request = await Request.update(
             {
@@ -278,7 +278,6 @@ exports.updateMyRequest = async (requestId, userId, status) => {
             {
                 where: {
                     id: requestId,
-                    userId: userId,
                 },
             }
         );
@@ -288,14 +287,14 @@ exports.updateMyRequest = async (requestId, userId, status) => {
         console.log(error);
         throw error;
     }
-}
+};
 
-exports.updateRequestStatusByRescuer = async (rescuerId, requestId, status) => {
+exports.rejectRequest = async (rescuerId, requestId) => {
     try {
         const request = await Request.update(
             {
-                status: status,
-                rescuerId: rescuerId,
+                status: REQUEST_STATUS.PENDING,
+                rescuerId: null,
 
             },
             {
@@ -305,7 +304,28 @@ exports.updateRequestStatusByRescuer = async (rescuerId, requestId, status) => {
             }
         );
 
+        //emit event to notify user
+
         return request;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+exports.acceptRequest = async (rescuerId, requestId) => {
+    try {
+        const request = await Request.update(
+            {
+                status: REQUEST_STATUS.RESCUING,
+                rescuerId: rescuerId,
+            },
+            {
+                where: {
+                    id: requestId,
+                },
+            }
+        );
     } catch (error) {
         console.log(error);
         throw error;

@@ -52,7 +52,7 @@ module.exports = (io, socket) => {
             console.log("rescuerLocations", rescuerLocations);
 
             rescuerLocations.forEach(async (rescuerLocation) => {
-                await NotificationService.create(rescuerLocation.userId, notificationMsg);
+                await NotificationService.create(rescuerLocation.userId, notificationMsg, requestId);
             });
 
             return socket.emit("locationSharingStarted", { requestId });

@@ -41,7 +41,7 @@ const notificationController = require("./app/controllers/socket/notification.co
 const statisticRoute = require("./routes/statistic.route");
 const conversationController = require("./app/controllers/socket/conversation.controller");
 const commentController = require("./app/controllers/socket/comment.controller");
-const setupNotificationListener = require("./listeners/notification.listener");
+const socketListener = require("./listeners/notification.listener");
 
 // connect to mongodb
 mongoDB.connect();
@@ -85,7 +85,9 @@ socketIo.use((socket, next) => {
 });
 
 // global event listener
-setupNotificationListener(socketIo);
+socketListener.setupNotificationListener(socketIo);
+socketListener.setupAcceptRequestListener(socketIo);
+socketListener.setupdVoteListener(socketIo);
 
 socketIo.on("connection", (socket) => {
     console.log(`User ${socket.id} with userId ${socket.user.id} connected`);

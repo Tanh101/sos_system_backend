@@ -4,6 +4,8 @@ const requestMediaService = require("../../services/requestMediaService/requestM
 const userLocationService = require("../../services/userLocationService/userLocation.service");
 const commentService = require("../../services/commentService/comment.service");
 const dangerAreaService = require("../../services/dangerAreaService/dangerArea.service");
+const eventEmitter = require("../../utils/eventEmitter");
+const NotificationService = require("../../services/notificationService/notification.service");
 
 const {
     PAGE,
@@ -186,6 +188,7 @@ exports.updateRequestStatus = async (req, res) => {
         const { id } = req.params;
         let status = req.query.status;
         const userId = req.user.id;
+        const userName = req.user.name;
         const role = req.user.role;
 
         const validStatuses = [
@@ -194,28 +197,49 @@ exports.updateRequestStatus = async (req, res) => {
             REQUEST_STATUS.RESCUING,
             REQUEST_STATUS.REJECTED
         ];
+        const request = await requestService.getById(id);
+        if (!request) {
+            return res.status(404).json({ message: "Request not found" });
+        }
 
         status = parseInt(status);
 
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status" });
         }
-        if (role === USER_ROLE.USER) {
-            await requestService.updateMyRequest(id, userId, status);
+        if (role === USER_ROLE.USER && request.userId === userId) {
+            await requestService.updateRequestStatus(id, status);
         }
 
         if (role === USER_ROLE.RESCUER) {
-            await requestService.updateRequestStatusByRescuer(userId, id, status);
+            if (status === REQUEST_STATUS.RESCUING && request.status === REQUEST_STATUS.PENDING) {
+                await requestService.acceptRequest(userId, id);
+
+                const notiMsg = `Cứu hộ ${userName} đã chấp nhận yêu cầu cứu hộ của bạn`;
+                await NotificationService.create(request.userId, notiMsg, id);
+
+                const updatedRequest = await requestService.getById(id);
+                eventEmitter.emit("updateRequest", { request: updatedRequest });
+
+            } else if (status === REQUEST_STATUS.REJECTED && request.status === REQUEST_STATUS.RESCUING) {
+                await requestService.rejectRequest(userId, id);
+
+                const notiMsg = `Cứu hộ ${userName} đã hủy tiếp nhận yêu cầu cứu hộ của bạn`;
+                await NotificationService.create(request.userId, notiMsg, id);
+
+                const updatedRequest = await requestService.getById(id);
+                eventEmitter.emit("updateRequest", { request: updatedRequest });
+            }
         }
 
-        const newReq = requestService.getDetail(id, userId);
+        const newReq = await requestService.getDetail(id, userId);
         if (newReq)
             return res.status(200).json(newReq);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 exports.getEmergencyRequestIsTracking = async (req, res) => {
     try {

@@ -35,14 +35,19 @@ module.exports = (io, socket) => {
                 return socket.emit("error", "Unable to create comment");
             }
 
-            
+            const notiMessage = `${socket.user.name} đã bình luận vào yêu cầu của bạn`;
+            if (request.userId !== userId)
+                await NotificationService.create(request.userId, notiMessage, requestId);
+
             const roomName = `requestDetail_${requestId}`;
             io.to(roomName).emit("comment", {
                 comment,
                 commentCount,
             });
+
         } catch (error) {
-            // ... (handle errors, e.g., invalid request ID)
+            console.log(error);
+            return socket.emit("error", "Internal server error");
         }
     });
 
