@@ -207,8 +207,13 @@ exports.updateRequestStatus = async (req, res) => {
         if (!validStatuses.includes(status)) {
             return res.status(400).json({ message: "Invalid status" });
         }
-        if (role === USER_ROLE.USER && request.userId === userId) {
-            await requestService.updateRequestStatus(id, status);
+        
+        if (request.userId === userId) {
+            if (status !== REQUEST_STATUS.RESCUED) {
+                return res.status(400).json({ message: "Invalid status" });
+            }
+
+            await requestService.finishRequest(id);
         }
 
         if (role === USER_ROLE.RESCUER) {
@@ -221,14 +226,28 @@ exports.updateRequestStatus = async (req, res) => {
                 const updatedRequest = await requestService.getById(id);
                 eventEmitter.emit("updateRequest", { request: updatedRequest });
 
-            } else if (status === REQUEST_STATUS.REJECTED && request.status === REQUEST_STATUS.RESCUING) {
-                await requestService.rejectRequest(userId, id);
+            } else if (status === REQUEST_STATUS.PENDING && request.status === REQUEST_STATUS.RESCUING) {
+                // Check if the request is being rescued by the rescuer
+                const isAssignedByRescuer = await requestService.isAssignedByRescuer(userId, id);
+                if (!isAssignedByRescuer) {
+                    return res.status(400).json({ message: "You are not assigned to this request" });
+                }
+
+                await requestService.reopenRequest(id);
 
                 const notiMsg = `Cứu hộ ${userName} đã hủy tiếp nhận yêu cầu cứu hộ của bạn`;
                 await NotificationService.create(request.userId, notiMsg, id);
 
                 const updatedRequest = await requestService.getById(id);
                 eventEmitter.emit("updateRequest", { request: updatedRequest });
+            }
+        } else if (role === USER_ROLE.ADMIN) {
+            if (status === REQUEST_STATUS.RESCUED) {
+                await requestService.finishRequest(id);
+            }
+
+            if (status === REQUEST_STATUS.PENDING) {
+                await requestService.reopenRequest(id);
             }
         }
 

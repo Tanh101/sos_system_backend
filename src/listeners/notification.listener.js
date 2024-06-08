@@ -22,11 +22,11 @@ exports.setupAcceptRequestListener = (io) => {
     if (!eventEmitter.listenerCount("updateRequest")) {
         eventEmitter.on("updateRequest", async (data) => {
             try {
-                const userId = data.request.userId;
-                const notifications = await NotificationService.getNotification(
-                    userId
-                );
-                io.to(`user_${userId}`).emit("notificationList", notifications);
+                // const userId = data.request.userId;
+                // const notifications = await NotificationService.getNotification(
+                //     userId
+                // );
+                // io.to(`user_${userId}`).emit("notificationList", notifications);
 
                 const roomName = `requestDetail_${data.request.id}`;
                 io.to(roomName).emit("updatedStatus", { status: data.request.status });
