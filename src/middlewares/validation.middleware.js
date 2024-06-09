@@ -1,12 +1,14 @@
 const { validateSignup } = require('../app/validations/signup.validation');
 const { validateSignin } = require('../app/validations/signin.validation');
 const { validateCreateEmergencyRequest,
-    validateCreateNormalRequest
+    validateCreateNormalRequest,
+    validateUpdateRequest
 } = require('../app/validations/createRequest.validation');
 const { validatePagination } = require('../app/validations/pagination.validation');
 const { validateGetMessages } = require('../app/validations/getMessages.validation');
 const { validateCreateComments } = require('../app/validations/createComment.validation.js');
 const { validatecreateDangerArea } = require('../app/validations/createDangerArea.validation.js');
+const { updateRequest } = require('../services/requestService/request.service.js');
 
 const validationMiddlewares = {
     signup: async (req, res, next) => {
@@ -44,6 +46,14 @@ const validationMiddlewares = {
             };
         }
 
+        next();
+    },
+
+    updateRequest: async (req, res, next) => {
+        const { error } = validateUpdateRequest(req.body);
+        if (error) {
+            return res.status(400).json({ message: error.details[0].message });
+        };
         next();
     },
 

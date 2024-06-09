@@ -326,3 +326,49 @@ exports.getRequestByRescuer = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
+
+exports.update = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { requestId } = req.params;
+        const { requestTypeId, media, content, latitude, longitude, address } = req.body;
+
+        const request = await requestService.getById(requestId);
+        if (!request) {
+            return res.status(404).json({ message: "Request not found" });
+        }
+
+        if (request.userId !== id) {
+            return res.status(403).json({ message: "You are not allowed to update this request" });
+        }
+
+        if (request.isEmergency) {
+            return res.status(400).json({ message: "Cannot update emergency request" });
+        }
+
+        const isExistRequestType = await requestService.isExistRequestType(requestTypeId);
+        if (!isExistRequestType) {
+            return res.status(404).json({ message: "Request type not found" });
+        }
+
+        const updatedRequest = await requestService.updateRequest(
+            requestId,
+            {
+                requestTypeId,
+                content,
+                latitude,
+                longitude,
+                address
+            }
+        );
+
+        if (media && media.length > 0) {
+            await requestMediaService.updateMedia(requestId, media);
+        }
+
+        return res.status(200).json(updatedRequest);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};

@@ -136,6 +136,7 @@ exports.getDetail = async (id, userId) => {
                     model: User,
                     as: 'users',
                     attributes: [
+                        'id',
                         'name',
                         'avatar',
                     ],
@@ -564,6 +565,24 @@ exports.isAssignedByRescuer = async (rescuerId, requestId) => {
         }
 
         return false;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+exports.updateRequest = async (requestId, data) => {
+    try {
+        const request = await Request.update(
+            data,
+            {
+                where: {
+                    id: requestId
+                }
+            }
+        );
+
+        return request;
     } catch (error) {
         console.log(error);
         throw error;
