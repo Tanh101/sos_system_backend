@@ -20,6 +20,17 @@ const emergecyRequestSchema = Joi.object({
     address: Joi.string().min(6).required(),
 });
 
+const updateRequestSchema = Joi.object({
+    requestTypeId: Joi.number().required(),
+    content: Joi.string().min(10).max(500).required(),
+    latitude: Joi.number().required(),
+    longitude: Joi.number().required(),
+    address: Joi.string().min(6).required(),
+    media: Joi.array().items(Joi.string()),
+});
+
 exports.validateCreateNormalRequest = validator(normalRequestSchema);
 
 exports.validateCreateEmergencyRequest = validator(emergecyRequestSchema);
+
+exports.validateUpdateRequest = validator(updateRequestSchema);

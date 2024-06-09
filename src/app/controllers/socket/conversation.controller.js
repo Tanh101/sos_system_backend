@@ -19,19 +19,21 @@ module.exports = (io, socket) => {
             }
 
             const newMessage = conversation.lastMessage;
+            const receiverRoom = `user_${receiver}`;
+            const senderRoom = `user_${sender}`;
 
             // Emit the message to the sender and receiver
-            io.to(receiver).emit("privateMessage", {
+            io.to(receiverRoom).emit("privateMessage", {
                 conversationId: conversation._id,
                 message: newMessage,
             });
-            io.to(sender).emit("privateMessage", {
+            io.to(senderRoom).emit("privateMessage", {
                 conversationId: conversation._id,
                 message: newMessage,
             });
 
             // Notify the receiver
-            io.to(receiver).emit("newMessage", {
+            io.to(receiverRoom).emit("newMessage", {
                 conversationId: conversation._id,
                 message: newMessage,
             });

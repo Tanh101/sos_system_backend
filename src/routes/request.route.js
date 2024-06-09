@@ -10,6 +10,7 @@ const authMiddleware = require('../middlewares/auth.middleware');
 
 router.post('/', authMiddleware.getAccessToken, authMiddleware.checkAuth, validationMiddlewares.createRequest, requestController.create);
 router.put('/:id', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.updateRequestStatus);
+router.patch('/:id', authMiddleware.getAccessToken, authMiddleware.checkAuth, validationMiddlewares.updateRequest, requestController.update);
 router.post('/:id/vote', authMiddleware.getAccessToken, authMiddleware.checkAuth, voteController.vote);
 router.get('/me', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.getUserRequestByStatus);
 router.get('/active', authMiddleware.getAccessToken, authMiddleware.checkAuth, requestController.getEmergencyRequestIsTracking);
