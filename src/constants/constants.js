@@ -32,6 +32,10 @@ const DANGER_AREA_STATUS = {
 
 const MAX_DISTANCE = 15000;
 
+const KEY_TYPE = {
+    GGMAP: "ggmap",
+}
+
 module.exports = {
     ITEM_PER_PAGE,
     PAGE,
@@ -40,5 +44,6 @@ module.exports = {
     USER_STATUS,
     USER_ROLE,
     DANGER_AREA_STATUS,
-    MAX_DISTANCE
+    MAX_DISTANCE,
+    KEY_TYPE,
 };

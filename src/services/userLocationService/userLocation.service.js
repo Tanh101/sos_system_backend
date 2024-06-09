@@ -112,3 +112,32 @@ exports.getRescuerNearby = async (location) => {
         throw error;
     }
 };
+
+exports.getUserNearby = async (latitude, longitude, radius) => {
+    try {
+        const users = await UserLocation.aggregate([
+            {
+                $geoNear: {
+                    near: {
+                        type: "Point",
+                        coordinates: [Number(longitude), Number(latitude)],
+                    },
+                    distanceField: "distance",
+                    maxDistance: Number(radius),
+                    spherical: true,
+                },
+            },
+            {
+                $match: {
+                    role: USER_ROLE.USER,
+                },
+            },
+        ]);
+
+        return users;
+
+    } catch (error) {
+        console.error("Error fetching users in area:", error);
+        throw error;
+    }
+}

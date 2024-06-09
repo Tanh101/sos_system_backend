@@ -22,12 +22,6 @@ exports.setupAcceptRequestListener = (io) => {
     if (!eventEmitter.listenerCount("updateRequest")) {
         eventEmitter.on("updateRequest", async (data) => {
             try {
-                // const userId = data.request.userId;
-                // const notifications = await NotificationService.getNotification(
-                //     userId
-                // );
-                // io.to(`user_${userId}`).emit("notificationList", notifications);
-
                 const roomName = `requestDetail_${data.request.id}`;
                 io.to(roomName).emit("updatedStatus", { status: data.request.status });
             } catch (error) {
@@ -42,9 +36,6 @@ exports.setupdVoteListener = (io) => {
         eventEmitter.on("newVote", async (data) => {
             try {
                 const userId = data.userId;
-                const notifications = await NotificationService.getNotification(userId);
-                io.to(`user_${userId}`).emit("notificationList", notifications);
-
                 const roomName = `requestDetail_${data.requestId}`;
                 io.to(roomName).emit("newVoteUpdate", { voteCount: data.voteCount, voteType: data.voteType });
             } catch (error) {
