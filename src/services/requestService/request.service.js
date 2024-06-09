@@ -289,13 +289,33 @@ exports.updateRequestStatus = async (requestId, status) => {
     }
 };
 
-exports.rejectRequest = async (rescuerId, requestId) => {
+exports.finishRequest = async (requestId) => {
+    try {
+        const request = await Request.update(
+            {
+                status: REQUEST_STATUS.RESCUED,
+            },
+            {
+                where: {
+                    id: requestId,
+                },
+            }
+        );
+
+        return request;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+
+}
+
+exports.reopenRequest = async (requestId) => {
     try {
         const request = await Request.update(
             {
                 status: REQUEST_STATUS.PENDING,
                 rescuerId: null,
-
             },
             {
                 where: {
@@ -526,6 +546,26 @@ exports.getRequestByRescuerOrPending = async (rescuerId, status, page, itemPerPa
         return requests;
     } catch (error) {
         console.log(error)
+        throw error;
+    }
+}
+
+exports.isAssignedByRescuer = async (rescuerId, requestId) => {
+    try {
+        const request = await Request.findOne({
+            where: {
+                rescuerId: rescuerId,
+                id: requestId
+            }
+        });
+
+        if (request) {
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        console.log(error);
         throw error;
     }
 }
