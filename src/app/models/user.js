@@ -88,7 +88,10 @@ module.exports = (sequelize, DataTypes) => {
             },
             withoutPhone: {
                 attributes: { exclude: ['phoneNumber', 'password', 'refreshToken'] }
-            }
+            },
+            withoutEmail: {
+                attributes: { exclude: ['email', 'password', 'refreshToken'] }  
+            },
         }
     });
 

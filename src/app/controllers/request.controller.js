@@ -168,7 +168,7 @@ exports.getUserRequestByStatus = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || PAGE;
         const itemPerPage = parseInt(req.query.itemPerPage) || ITEM_PER_PAGE;
-        const status = req.query.status || REQUEST_STATUS.PENDING;
+        const status = req.query.status;
         const isEmergency = req.query.isEmergency;
         const userId = req.user.id;
 

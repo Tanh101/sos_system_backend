@@ -3,14 +3,15 @@ const db = require("../models/index");
 const { ITEM_PER_PAGE, PAGE } = require("../../constants/constants");
 const { Op } = require("sequelize");
 const User = db.users;
-const userLocationService = require('../../services/userLocationService/userLocation.service');
+const userLocationService = require("../../services/userLocationService/userLocation.service");
+const userService = require("../../services/userService/user.service");
 
 exports.profile = async (req, res) => {
     try {
         const { id } = req.user;
         const user = await User.findOne({
             where: { id },
-            include: ["requests"],
+            // include: ["requests"],
         });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -27,7 +28,9 @@ exports.updateStatus = async (req, res) => {
     try {
         const { id } = req.params;
         if (req.user.id === id) {
-            return res.status(403).json({ message: "You can't change your status" });
+            return res
+                .status(403)
+                .json({ message: "You can't change your status" });
         }
 
         const user = await User.findOne({ where: { id } });
@@ -48,15 +51,16 @@ exports.updateStatus = async (req, res) => {
 
 exports.filterUser = async (req, res) => {
     try {
-        const { name, email, status, role, address, sortBy, sortOrder } = req.body;
-        if (role === 'admin') {
+        const { name, email, status, role, address, sortBy, sortOrder } =
+            req.body;
+        if (role === "admin") {
             return res.status(403).json({ message: "You can't filter admin" });
         }
         const page = parseInt(req.query.page) || PAGE;
         const itemPerPage = parseInt(req.query.itemPerpage) || ITEM_PER_PAGE;
 
         const whereClause = {
-            role: { [Op.not]: 'admin' },
+            role: { [Op.not]: "admin" },
         };
 
         if (name) {
@@ -77,9 +81,10 @@ exports.filterUser = async (req, res) => {
 
         const orderClause = [];
         if (sortBy) {
-            const order = sortOrder && ["ASC", "DESC"].includes(sortOrder.toUpperCase())
-                ? sortOrder.toUpperCase()
-                : "ASC";
+            const order =
+                sortOrder && ["ASC", "DESC"].includes(sortOrder.toUpperCase())
+                    ? sortOrder.toUpperCase()
+                    : "ASC";
             orderClause.push([sortBy, order]);
         }
 
@@ -111,11 +116,16 @@ exports.createOrUpdateUserLocation = async (req, res) => {
         const { latitude, longitude } = req.body;
         if (!latitude || !longitude) {
             return res.status(400).json({
-                message: "Latitude and Longitude is required"
+                message: "Latitude and Longitude is required",
             });
         }
-        const userLocation = await userLocationService.createOrUpdate(userId, role, latitude, longitude);
-        
+        const userLocation = await userLocationService.createOrUpdate(
+            userId,
+            role,
+            latitude,
+            longitude
+        );
+
         if (userLocation) {
             return res.status(200).json(userLocation);
         }
@@ -123,4 +133,62 @@ exports.createOrUpdateUserLocation = async (req, res) => {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
+exports.getUpdateUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const user = await userService.getUserById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.updateUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const data = req.body;
+
+        const user = await userService.updateUser(id, data);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.updateAvatar = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { avatar } = req.body;
+        const user = await User.findOne({ where: { id } });
+
+        if (!avatar) {
+            return res.status(400).json({ message: "Avatar is required" });
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        user.avatar = avatar;
+        await user.save();
+
+        return res.status(200).json(user);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
