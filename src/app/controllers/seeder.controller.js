@@ -1,7 +1,9 @@
-const { USER_ROLE } = require("../../constants/constants");
+const { USER_ROLE, KEY_TYPE } = require("../../constants/constants");
 const db = require("../models/index");
 const User = db.users;
 const UserLocation = require("../models/mongo/userLocation");
+const Key = require("../models/mongo/keys");
+
 exports.seeder = async (req, res) => {
     try {
 
@@ -44,3 +46,40 @@ exports.seeder = async (req, res) => {
     }
 }
 
+exports.createOrUpdateKey = async (req, res) => {
+    try {
+        const { key } = req.body;
+        if (!key) return res.status(400).json({ message: "Key is required" });
+        
+        const type = req.body.type || KEY_TYPE.GGMAP;
+
+        const keyExist = await Key.findOne({ type });
+
+        if (keyExist) {
+            keyExist.value = key;
+            await keyExist.save();
+        } else {
+            await Key.create({ value: key, type });
+        }
+
+        return res.status(200).json({ message: "Create or update key successfully" });
+    } catch (error) {
+        console.error("Error creating or updating key:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+exports.getKey = async (req, res) => {
+    try {
+        const type = req.query.type || KEY_TYPE.GGMAP;
+
+        const key
+            = await Key.findOne({ type });
+
+        return res.status(200).json({ key: key.value });
+    }
+    catch (error) {
+        console.error("Error getting key:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
