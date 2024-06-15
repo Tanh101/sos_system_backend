@@ -197,13 +197,17 @@ exports.getById = async (id) => {
     }
 };
 
-exports.getUserRequestByStatus = async (userId, isEmergency, status, itemPerPage, page) => {
+exports.getUserRequestByStatus = async (userId, isEmergency, status, page, itemPerPage) => {
     try {
-        let query = {};
+        let query = { userId: userId };
 
-        isEmergency
-            ? (query = { userId: userId, status: status, isEmergency: isEmergency })
-            : (query = { userId: userId, status: status });
+        if (isEmergency !== undefined) {
+            query.isEmergency = isEmergency;
+        }
+
+        if (status !== undefined && status !== null) {
+            query.status = status;
+        }
 
         const requests = await Request.findAndCountAll({
             where: query,
@@ -218,6 +222,7 @@ exports.getUserRequestByStatus = async (userId, isEmergency, status, itemPerPage
                     model: User,
                     as: 'users',
                     attributes: [
+                        'id',
                         'name',
                         'avatar',
                     ],
