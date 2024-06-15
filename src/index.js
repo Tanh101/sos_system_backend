@@ -33,8 +33,6 @@ const dangerAreaRoute = require("./routes/danger.route");
 const seederRoute = require("./routes/seeder.route");
 const port = systemConfig.port || 3000;
 
-const clientController = require("./app/controllers/socket/client.controller");
-const rescuerController = require("./app/controllers/socket/rescuer.controller");
 const locationController = require("./app/controllers/socket/location.controller");
 const authMiddleware = require("./middlewares/socket/auth.middleware");
 const notificationController = require("./app/controllers/socket/notification.controller");
@@ -42,6 +40,7 @@ const statisticRoute = require("./routes/statistic.route");
 const conversationController = require("./app/controllers/socket/conversation.controller");
 const commentController = require("./app/controllers/socket/comment.controller");
 const socketListener = require("./listeners/notification.listener");
+const userCountController = require("./app/controllers/socket/userCount.controller");
 
 // connect to mongodb
 mongoDB.connect();
@@ -88,6 +87,7 @@ socketIo.use((socket, next) => {
 socketListener.setupNotificationListener(socketIo);
 socketListener.setupAcceptRequestListener(socketIo);
 socketListener.setupdVoteListener(socketIo);
+socketListener.setupUnviewedListener(socketIo);
 
 socketIo.on("connection", (socket) => {
     console.log(`User ${socket.id} with userId ${socket.user.id} connected`);
@@ -116,6 +116,7 @@ socketIo.on("connection", (socket) => {
     notificationController(socketIo, socket);
     conversationController(socketIo, socket);
     commentController(socketIo, socket);
+    userCountController(socketIo, socket);
 });
 
 socketIo.on("disconnect", (socket) => {

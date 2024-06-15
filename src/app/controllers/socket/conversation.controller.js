@@ -1,4 +1,5 @@
 const ConversationService = require("../../../services/chatService/conversation.service");
+const UserCountService = require("../../../services/userCountService/userCount.service");
 
 module.exports = (io, socket) => {
     socket.on("privateMessage", async (data) => {
@@ -37,6 +38,7 @@ module.exports = (io, socket) => {
                 conversationId: conversation._id,
                 message: newMessage,
             });
+
         } catch (error) {
             // ... (handle errors, e.g., invalid user ID)
         }

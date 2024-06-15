@@ -1,4 +1,5 @@
 const Conversation = require("../../app/models/mongo/conversation");
+const UserCountService = require("../userCountService/userCount.service");
 const db = require("../../app/models/index");
 const User = db.users;
 
@@ -118,6 +119,9 @@ exports.update = async (senderId, receiverId, message) => {
             (conversation.unreadCount.get(receiverIdStr) || 0) + 1
         );
         await conversation.save();
+
+        // Increment unviewed messages count for the receiver
+        await UserCountService.updateUnviewedMessages(receiverId);
 
         return conversation;
     } catch (error) {

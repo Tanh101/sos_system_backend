@@ -1,4 +1,5 @@
 const Notification = require("../../app/models/mongo/notification");
+const UserCountService = require("../userCountService/userCount.service");
 const eventEmitter = require("../../utils/eventEmitter");
 
 exports.getNotification = (userId) => {
@@ -21,6 +22,10 @@ exports.create = async (userId, message, requestId) => {
     });
     
     await notification.save();
+
+    // Increment the unviewed notifications count
+    await UserCountService.incrementUnviewedNotifications(userId);
+
     // Emit an event to notify the user to get the latest notifications
     eventEmitter.emit("newNotification", { userId });
     // eventEmitter.removeAllListeners("newNotification");

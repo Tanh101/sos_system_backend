@@ -1,5 +1,6 @@
 const eventEmitter = require("../utils/eventEmitter");
 const NotificationService = require("../services/notificationService/notification.service");
+const UserCountService = require("../services/userCountService/userCount.service");
 
 exports.setupNotificationListener = (io) => {
     if (!eventEmitter.listenerCount("newNotification")) {
@@ -40,6 +41,22 @@ exports.setupdVoteListener = (io) => {
                 io.to(roomName).emit("newVoteUpdate", { voteCount: data.voteCount, voteType: data.voteType });
             } catch (error) {
                 console.error("Error in newNotification listener:", error);
+            }
+        });
+    }
+}
+
+exports.setupUnviewedListener = (io) => {
+    if (!eventEmitter.listenerCount("unviewedCountUpdated")) {
+        eventEmitter.on("unviewedCountUpdated", async (data) => {
+            try {
+                const userId = data.userId;
+                const userCount = await UserCountService.get(userId);
+
+                io.to(`user_${userId}`).emit("unviewedCountUpdated", userCount);
+                console.log(`Unviewed count for user ${userId}`);
+            } catch (error) {
+                console.error("Error in unviewedCountUpdated listener:", error);
             }
         });
     }
