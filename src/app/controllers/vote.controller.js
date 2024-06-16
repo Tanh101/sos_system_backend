@@ -31,8 +31,7 @@ exports.vote = async (req, res) => {
             voteCount = await voteService.setNone(userId, requestId);
         }
         if (voteType === VOTE_TYPE.upvote || voteType === VOTE_TYPE.downvote) {
-            const notiMsg = `${req.user.name} đã 
-                ${voteType === VOTE_TYPE.upvote ? 'upvote' : 'downvote'} yêu cầu của bạn`;
+            const notiMsg = `${req.user.name} đã ${voteType === VOTE_TYPE.upvote ? 'upvote' : 'downvote'} yêu cầu của bạn`;
 
             if (request.userId !== userId) {
                 await NotificationService.create(request.userId, notiMsg, requestId);

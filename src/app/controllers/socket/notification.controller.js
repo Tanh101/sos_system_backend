@@ -76,4 +76,13 @@ module.exports = (io, socket) => {
             console.error("Error in deleteWarningArea:", error);
         }
     });
+
+    socket.on("markAsReadNotification", async (data) => {
+        try {
+            const { id } = data;
+            await NotificationService.markAsRead(id);
+        } catch (error) {
+            console.error("Error in markAsReadNotification:", error);
+        }
+    });
 };
