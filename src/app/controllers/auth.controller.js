@@ -65,7 +65,8 @@ exports.login = async (req, res) => {
         const dataForAccessToken = {
             id: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            name: user.name,
         };
 
         const accessToken = await AuthService.generateToken(dataForAccessToken, accessTokenSecret, accessTokenLife);
