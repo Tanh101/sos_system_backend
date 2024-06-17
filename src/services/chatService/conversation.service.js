@@ -1,6 +1,7 @@
 const Conversation = require("../../app/models/mongo/conversation");
 const UserCountService = require("../userCountService/userCount.service");
 const db = require("../../app/models/index");
+const Chatbot = require("../../app/models/mongo/chatbot");
 const User = db.users;
 
 exports.find = async (conversationId) => {
@@ -145,6 +146,53 @@ exports.markAsRead = async (conversationId, userId) => {
         return conversation;
     } catch (error) {
         console.error("Error marking conversation as read:", error);
+        throw error;
+    }
+};
+
+exports.createConversationWithChatbot = async (userId, sender, message) => {
+    try {
+        const userConversation = await Chatbot.findOne({
+            userId,
+        });
+
+        if (userConversation) {
+            userConversation.messages.push({
+                sender,
+                text: message,
+            });
+            await userConversation.save();
+            return userConversation;
+        }
+
+        const conversation = new Chatbot({
+            userId,
+            messages: [
+                {
+                    sender,
+                    text: message,
+                },
+            ],
+        });
+        await conversation.save();
+
+        return conversation;
+    } catch (error) {
+        console.error("Error creating conversation with chatbot:", error);
+        throw error;
+    }
+}
+
+exports.getChatbotConversation = async (userId) => {
+    try {
+        const conversation = await Chatbot.findOne({
+            userId,
+        });
+
+        return conversation;
+    }
+    catch (error) {
+        console.error("Error fetching chatbot conversation:", error);
         throw error;
     }
 };
