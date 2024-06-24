@@ -23,6 +23,39 @@ exports.create = async (rescuerId, requestId, latitude, longitude, radius, messa
     }
 };
 
+exports.createOrUpdate = async (rescuerId, requestId, latitude, longitude, radius, message, address) => {
+    try {
+        console.log("id", requestId)
+        const dangerArea = await DangerArea.findOneAndUpdate(
+            {
+                requestId,
+            },
+            {
+                rescuerId,
+                requestId,
+                location: {
+                    type: "Point",
+                    coordinates: [longitude, latitude],
+                },
+                radius,
+                message,
+                status: "active",
+                address,
+                updatedAt: new Date(),
+            },
+            {
+                new: true,
+                upsert: true,
+            }
+        );
+
+        return dangerArea;
+    } catch (error) {
+        console.error("Error updating location:", error);
+        throw error;
+    }
+}
+
 exports.update = async (requestId, radius, message) => {
     try {
         const dangerArea = await DangerArea.findOneAndUpdate(
@@ -75,7 +108,6 @@ exports.getByRequestId = async (requestId) => {
     try {
         const dangerArea = await DangerArea.findOne({
             requestId,
-            status: DANGER_AREA_STATUS.ACTIVE,
         });
 
         return dangerArea;
@@ -88,26 +120,32 @@ exports.getByRequestId = async (requestId) => {
 
 exports.getAllDangerArea = async (rescuerId, status) => {
     try {
+        let matchStage = { rescuerId };
+
         if (status) {
-            const dangerArea = await DangerArea.find(
-                {
-                    rescuerId,
-                    status
-                }
-            );
-            return dangerArea;
+            matchStage.status = status;
         }
 
-        //sort and return all
-        const dangerAreaSort = await DangerArea.find(
+        const dangerAreas = await DangerArea.aggregate([
+            { $match: matchStage },
             {
-                rescuerId
-            }
-        ).sort({ createdAt: -1 });
-        return dangerAreaSort;
-    }
-    catch (error) {
-        console.error("Error fetching location:", error);
+                $addFields: {
+                    sortStatus: {
+                        $cond: {
+                            if: { $eq: ["$status", "active"] },
+                            then: 1,
+                            else: { $cond: { if: { $eq: ["$status", "deleted"] }, then: 2, else: 3 } }
+                        }
+                    }
+                }
+            },
+            { $sort: { sortStatus: 1, createdAt: -1 } },
+            { $project: { sortStatus: 0 } } // Exclude the sortStatus field from the final output
+        ]);
+
+        return dangerAreas;
+    } catch (error) {
+        console.error("Error fetching danger areas:", error);
         throw error;
     }
 }

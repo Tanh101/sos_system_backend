@@ -8,7 +8,7 @@ const updateUserSchema = Joi.object({
     phoneNumber: Joi.string().required().pattern(/^[0-9]+$/).min(10).max(12),
     address: Joi.string().min(6).max(255),
     dob: Joi.date().max("now"),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri().optional(),
 });
 
 exports.validateUpdateUser = validator(updateUserSchema);
