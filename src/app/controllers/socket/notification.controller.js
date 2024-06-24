@@ -24,19 +24,18 @@ module.exports = (io, socket) => {
             const userId = socket.user.id;
             const { requestId, latitude, longitude, radius, message, address } = data;
 
-            const isExitDangerArea = await DangerAreaService.getByRequestId(requestId);
-            if (!isExitDangerArea) {
-                await DangerAreaService.create(userId, requestId, latitude, longitude, radius, message, address);
+            await DangerAreaService.createOrUpdate(userId, requestId, latitude, longitude, radius, message, address);
 
-                const users = await UserLocationService.getUserNearby(latitude, longitude, radius);
+            socket.emit("dangerAreaCreated", requestId);
+            
+            const users = await UserLocationService.getUserNearby(latitude, longitude, radius);
 
-                const notMsg = "Khu vực hiện tại của bạn đang có nguy cơ nguy hiểm. Vui lòng tránh khu vực này";
+            const notMsg = "Khu vực hiện tại của bạn đang có nguy cơ nguy hiểm. Vui lòng tránh khu vực này";
 
-                if (users.length > 0) {
-                    users.forEach((user) => {
-                        NotificationService.create(user.userId, notMsg, requestId);
-                    });
-                }
+            if (users.length > 0) {
+                users.forEach((user) => {
+                    NotificationService.create(user.userId, notMsg, requestId);
+                });
             }
         } catch (error) {
             console.error("Error in createWarningArea:", error);
@@ -71,9 +70,24 @@ module.exports = (io, socket) => {
             const isExitDangerArea = await DangerAreaService.getByRequestId(requestId);
             if (isExitDangerArea) {
                 await DangerAreaService.updateStatus(requestId, status);
+                socket.emit("dangerAreaDeleted", requestId);
             }
         } catch (error) {
             console.error("Error in deleteWarningArea:", error);
+        }
+    });
+
+    socket.on("reopenDangerArea", async (data) => {
+        try {
+            const { requestId } = data;
+            const status = DANGER_AREA_STATUS.ACTIVE;
+            const isExitDangerArea = await DangerAreaService.getByRequestId(requestId);
+            if (isExitDangerArea) {
+                await DangerAreaService.updateStatus(requestId, status);
+                socket.emit("dangerAreaReopened", requestId);
+            }
+        } catch (error) {
+            console.error("Error in reopenWarningArea:", error);
         }
     });
 

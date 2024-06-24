@@ -495,9 +495,6 @@ exports.getRequestByRescuerOrPending = async (rescuerId, status, page, itemPerPa
             whereCondition = {
                 [Sequelize.Op.or]: [
                     {
-                        rescuerId: rescuerId,
-                    },
-                    {
                         status: REQUEST_STATUS.PENDING
                     }
                 ]

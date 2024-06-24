@@ -86,6 +86,10 @@ exports.getById = async (req, res) => {
 
         const dangerArea = await dangerAreaService.getByRequestId(requestId);
 
+        if (!dangerArea) {
+            return res.status(404).json({ message: "Danger area not found" });
+        }
+
         return res.status(200).json(dangerArea);
     } catch (error) {
         console.error("Error fetching location:", error);

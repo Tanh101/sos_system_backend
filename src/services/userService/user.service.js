@@ -23,6 +23,11 @@ exports.updateUser = async (id, data) => {
             return null;
         }
 
+        console.log(data.avatar);
+        if (!data.avatar) {
+            delete data.avatar;
+        }
+
         await user.update(data);
 
         return user;

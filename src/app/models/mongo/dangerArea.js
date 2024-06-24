@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const dangerAreasSchema = new mongoose.Schema(
     {
-        rescuerId: { type: String, required: true },
+        rescuerId: { type: Number, required: true },
         requestId: { type: Number, required: false },
         location: {
             type: {
