@@ -590,3 +590,23 @@ exports.updateRequest = async (requestId, data) => {
         throw error;
     }
 }
+
+exports.updateRequestDangerStatus = async (requestId, status) => {
+    try {
+        const request = await Request.update(
+            {
+                dangerStatus: status
+            },
+            {
+                where: {
+                    id: requestId
+                }
+            }
+        );
+
+        return request;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
