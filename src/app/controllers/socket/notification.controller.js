@@ -47,7 +47,12 @@ module.exports = (io, socket) => {
             const { requestId, latitude, longitude, radius, message } = data;
             const isExitDangerArea = await DangerAreaService.getByRequestId(requestId);
             if (isExitDangerArea) {
-                await DangerAreaService.update(requestId, radius, message);
+                const dangerArea = await DangerAreaService.update(requestId, radius, message);
+
+                if (dangerArea) {
+                    socket.emit("dangerAreaUpdated", requestId);
+                }
+                
                 const users = await UserLocationService.getUserNearby(latitude, longitude, radius);
 
                 const notMsg = "Khu vực hiện tại của bạn đang có nguy cơ nguy hiểm. Vui lòng tránh khu vực này";

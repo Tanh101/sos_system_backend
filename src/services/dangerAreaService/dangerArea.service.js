@@ -1,5 +1,6 @@
 const DangerArea = require("../../app/models/mongo/dangerArea");
 const { DANGER_AREA_STATUS } = require("../../constants/constants");
+const RequestService = require("../requestService/request.service");
 
 exports.create = async (rescuerId, requestId, latitude, longitude, radius, message, address) => {
     try {
@@ -49,6 +50,8 @@ exports.createOrUpdate = async (rescuerId, requestId, latitude, longitude, radiu
             }
         );
 
+        await RequestService.updateRequestDangerStatus(requestId, "active");
+
         return dangerArea;
     } catch (error) {
         console.error("Error updating location:", error);
@@ -71,6 +74,8 @@ exports.update = async (requestId, radius, message) => {
                 new: true,
             }
         );
+
+        await RequestService.updateRequestDangerStatus(requestId, "active");
 
         return dangerArea;
     } catch (error) {
@@ -95,6 +100,8 @@ exports.updateStatus = async (requestId, status) => {
         const dangerArea = await DangerArea.findOneAndUpdate({
             requestId
         }, { status }, { new: true });
+
+        await RequestService.updateRequestDangerStatus(requestId, status);
 
         return dangerArea;
     }
