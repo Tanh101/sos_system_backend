@@ -6,8 +6,7 @@ exports.getStatistic = async (req, res) => {
         const totalRequestPending = await statisticservice.getTotalRequestByStatus(REQUEST_STATUS.PENDING);
         const totalRequestRescuing = await statisticservice.getTotalRequestByStatus(REQUEST_STATUS.RESCUING);
         const totalRequestRescued = await statisticservice.getTotalRequestByStatus(REQUEST_STATUS.RESCUED);
-        const totalRequestRejected = await statisticservice.getTotalRequestByStatus(REQUEST_STATUS.REJECTED);
-        const totalRequests = await statisticservice.getTotalRequestByStatus('');
+        const totalRequests = totalRequestPending + totalRequestRescuing + totalRequestRescued;
 
         const totalUsers = await statisticservice.getTotalUserByRole(USER_ROLE.USER);
         const totalRescuers = await statisticservice.getTotalUserByRole(USER_ROLE.RESCUER);
@@ -16,7 +15,6 @@ exports.getStatistic = async (req, res) => {
             totalRequestPending,
             totalRequestRescuing,
             totalRequestRescued,
-            totalRequestRejected,
             totalUsers,
             totalRescuers,
             totalRequests

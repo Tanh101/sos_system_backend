@@ -6,10 +6,11 @@ const jwtConfig = require("../configs/jwt.config");
 const promisify = require("util").promisify;
 const User = db.users;
 const AuthService = require('../../services/authService/auth.service');
+const { USER_ROLE, USER_STATUS } = require('../../constants/constants');
 
 exports.register = async (req, res) => {
     try {
-        const { email, password, repeatPassword, name, dob, phoneNumber, address } = req.body;
+        const { role, email, password, repeatPassword, name, dob, phoneNumber, address } = req.body;
         const user = await User.findOne({ where: { email: email } });
         if (user) {
             return res.status(400).json({ message: "Email already exists" });
@@ -20,13 +21,20 @@ exports.register = async (req, res) => {
         }
 
         const hashedPassword = await bycript.hashSync(password, 10);
+        let status = USER_STATUS.ACTIVE;
+        if (role === USER_ROLE.RESCUER) {
+            status = USER_STATUS.PENDING;
+        }
+
         const newUser = await User.create({
+            role: role,
             email: email,
             password: hashedPassword,
             name: name,
             dob: dob,
             phoneNumber: phoneNumber,
-            address: address
+            address: address,
+            status: status,
         });
 
         const userWithoutPassword = newUser.toJSON();
@@ -54,9 +62,12 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        if (user.status === 0) {
-
+        if (user.status === USER_STATUS.DELETE) {
             return res.status(403).json({ message: "User is blocked" });
+        }
+
+        if(user.status === USER_STATUS.PENDING) {
+            return res.status(403).json({ message: "Rescuer is pending" });
         }
 
         const accessTokenLife = jwtConfig.accessTokenLife;

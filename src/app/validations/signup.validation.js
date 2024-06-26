@@ -11,6 +11,7 @@ const signupSchema = Joi.object({
     phoneNumber: Joi.string().required().pattern(/^[0-9]+$/).min(10).max(12),
     address: Joi.string().min(6).max(255),
     dob: Joi.date().max("now"),
+    role: Joi.string().valid("user", "rescuer"),
 });
 
 exports.validateSignup = validator(signupSchema);

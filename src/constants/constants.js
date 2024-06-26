@@ -1,6 +1,7 @@
 const USER_STATUS = {
     ACTIVE: 1,
-    DELETE: 0
+    DELETE: 0,
+    PENDING: 2,
 };
 
 const ITEM_PER_PAGE = 10;
