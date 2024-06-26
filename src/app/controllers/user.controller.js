@@ -51,13 +51,16 @@ exports.updateStatus = async (req, res) => {
 
 exports.filterUser = async (req, res) => {
     try {
-        const { name, email, status, role, address, sortBy, sortOrder } =
-            req.body;
+        const { name, email, status, address, sortBy, sortOrder } =
+        req.body;
+
+        const role = req.query.role || 'user';
+
         if (role === "admin") {
             return res.status(403).json({ message: "You can't filter admin" });
         }
         const page = parseInt(req.query.page) || PAGE;
-        const itemPerPage = parseInt(req.query.itemPerpage) || ITEM_PER_PAGE;
+        const itemPerPage = parseInt(req.query.itemPerpage) || 5;
 
         const whereClause = {
             role: { [Op.not]: "admin" },
@@ -79,7 +82,9 @@ exports.filterUser = async (req, res) => {
             whereClause.address = { [Op.like]: `%${address}%` };
         }
 
-        const orderClause = [];
+        const orderClause = [
+            ["createdAt", "DESC"],
+        ];
         if (sortBy) {
             const order =
                 sortOrder && ["ASC", "DESC"].includes(sortOrder.toUpperCase())
@@ -192,3 +197,29 @@ exports.updateAvatar = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+exports.acceptOrRejectRescuer = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const user = await User.findOne({ where: { id } });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.role !== "rescuer") {
+            return res.status(403).json({ message: "User is not a rescuer" });
+        }
+
+        user.status = status;
+
+        await user.save();
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+
+}
