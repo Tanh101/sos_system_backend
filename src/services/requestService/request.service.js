@@ -64,7 +64,10 @@ exports.get = async (page, itemPerPage, status, isEmergency, userId) => {
 
         if (status) {
             query = { status: status };
+        } else {
+            query.status = { [Sequelize.Op.ne]: REQUEST_STATUS.RESCUED };
         }
+
         if (isEmergency) {
             query = { isEmergency: isEmergency };
         }
