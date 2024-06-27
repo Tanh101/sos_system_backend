@@ -29,6 +29,7 @@ module.exports = (io, socket) => {
             socket.emit("dangerAreaCreated", requestId);
             
             const users = await UserLocationService.getUserNearby(latitude, longitude, radius);
+            console.log(users);
 
             const notMsg = "Khu vực hiện tại của bạn đang có nguy cơ nguy hiểm. Vui lòng tránh khu vực này";
 
