@@ -19,7 +19,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer@gmail.com",
             password: adminPassword,
-            name: "Hoàng Ngọc Thái- Đội cứu hộ Hải Châu",
+            name: "Hoàng Ngọc Thái",
             dob: new Date(),
             phone_number: "0123456781",
             address: "20 Hoàng Diệu, Phước Ninh, Hải Châu, Da Nang, Vietnam",
@@ -32,7 +32,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer1@gmail.com",
             password: adminPassword,
-            name: "Nguễn Văn Ba- Đội cứu hộ Thanh Khê",
+            name: "Nguễn Văn Ba",
             dob: new Date(),
             phone_number: "0123456112",
             address: "40 Đường Dũng Sĩ Thanh Khê, Thanh Khê District, Da Nang, Vietnam",
@@ -45,7 +45,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer2@gmail.com",
             password: adminPassword,
-            name: "Lê Hữu Thọ- Đội cứu hộ Liên Chiểu",
+            name: "Lê Hữu Thọ",
             dob: new Date(),
             phone_number: "01211567812",
             address: "30 Đường Ngô Thì Nhậm, Hòa Khánh Nam, Liên Chiểu, Đà Nẵng, Vietnam",
@@ -58,7 +58,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer3@gmail.com",
             password: adminPassword,
-            name: "Nguễn Văn Hoàng- Đội cứu hộ Sơn Trà",
+            name: "Nguễn Văn Hoàng",
             dob: new Date(),
             phone_number: "0362371234",
             address: "44 Tạ Mỹ Duật, An Hải Bắc, Sơn Trà, Đà Nẵng 550000, Vietnam",
@@ -71,7 +71,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer4@gmail.com",
             password: adminPassword,
-            name: "Lê Bá Duy- Đội cứu hộ Cẩm Lệ",
+            name: "Lê Bá Duy",
             dob: new Date(),
             phone_number: "0362375555",
             address: "121 Tôn Đức Thắng, Hòa An, Cẩm Lệ, Da Nang, Vietnam",
@@ -84,7 +84,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "rescuer5@gmail.com",
             password: adminPassword,
-            name: "Võ Văn Thành- Đội cứu hộ Ngũ Hành Sơn",
+            name: "Võ Văn Thành",
             dob: new Date(),
             phone_number: "0345643221",
             address: "49 Ngũ Hành Sơn, Mỹ An, Ngũ Hành Sơn, Da Nang, Vietnam",
