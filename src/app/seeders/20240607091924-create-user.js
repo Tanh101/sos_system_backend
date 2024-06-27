@@ -58,7 +58,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "test@gmail.com",
             password: adminPassword,
-            name: "testuser@gmail.com",
+            name: "Nguyen Dang Hoang",
             dob: new Date("1992-07-20"),
             phone_number: "0329555166",
             address: "422 Phan Chu Trinh, Hải Châu, Đà Nẵng",
@@ -71,7 +71,7 @@ module.exports = {
         await queryInterface.bulkInsert('users', [{
             email: "user@gmail.com",
             password: adminPassword,
-            name: "user@gmail.com",
+            name: "Le Khanh Huy",
             dob: new Date("1992-06-20"),
             phone_number: "0321255166",
             address: "422 Ngũ Hành Sơn, Ngũ Hành Sơn, Đà Nẵng",

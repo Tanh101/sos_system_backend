@@ -47,7 +47,7 @@ module.exports = {
                 request_type_id: 2,
                 content: 'Tôi bị thủng lốp xe, cần sự giúp đỡ.',
                 is_emergency: 0,
-                status: 3,
+                status: 0,
                 latitude: 16.0636584,
                 longitude: 108.2031629,
                 address: '32 Nguyễn Tri Phương, Thanh Khê District, Da Nang, Vietnam',
